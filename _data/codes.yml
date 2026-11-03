@@ -1,20 +1,21 @@
 # Codes listed on the Research page, in order.
 # Add `url:` (GitHub, Zenodo, PyPI...) once a code is public; drop `status:` then.
-- name: Quasar continuum networks
-  description: Autoencoder, CNN and U-Net models that predict the continuum of quasar
-    spectra between 1020 and 2000 Å, trained on WEAVE-QSO mocks.
-  paper: Pistis et al. (2025)
-  paper_url: https://arxiv.org/abs/2505.10976
-  status: Coming soon
 
-- name: PILOT
-  description: Physically-Informed Line identificatiOn Tool, a physically motivated
-    classifier for metal absorption lines in quasar spectra.
-  paper: Pistis et al. (submitted)
-  status: Coming soon
+# - name: PILOT
+#   description: Physically-Informed Line identificatiOn Tool, a physically motivated
+#     classifier for metal absorption lines in quasar spectra.
+#   paper: Pistis et al. (submitted)
+#   status: Coming soon
 
 - name: U-Net absorber detection
   description: Neural network that finds metal absorption lines in quasar spectra.
   paper: Mangola et al. (2026)
   paper_url: https://arxiv.org/abs/2609.28072
-  status: Coming soon
+  zenodo_url: https://zenodo.org/records/22711575
+
+- name: Quasar continuum networks
+  description: Autoencoder, CNN and U-Net models that predict the continuum of quasar
+    spectra between 1020 and 2000 Å, trained on WEAVE-QSO mocks.
+  paper: Pistis et al. (2025)
+  paper_url: https://arxiv.org/abs/2505.10976
+  zenodo_url: https://zenodo.org/records/15011824
