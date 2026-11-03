@@ -37,4 +37,4 @@ I work mainly with spectroscopic data from large galaxy and quasar surveys.
   to their other physical properties, using SDSS data in the local Universe and VIPERS
   data at intermediate redshift (z ∼ 0.7).
 
-More on the [research page](/research/).
+More on the [research page]({{ '/research/' | relative_url }}).
