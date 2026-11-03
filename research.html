@@ -7,9 +7,9 @@ body_class: research
 {% assign pubs = site.data.publications %}
 <p class="pub-source">
   {% if pubs.source == "ads" %}Updated automatically from
-  <a href="https://ui.adsabs.harvard.edu/search/q=orcid%3A{{ site.author.orcid }}&amp;sort=date%20desc%2C%20bibcode%20desc">NASA ADS</a>
+  <a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a>
   on {{ pubs.updated }}.{% else %}Full lists on
-  <a href="https://ui.adsabs.harvard.edu/search/q=orcid%3A{{ site.author.orcid }}&amp;sort=date%20desc%2C%20bibcode%20desc">NASA ADS</a>,
+  <a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a>,
   <a href="https://arxiv.org/search/?query=Pistis%2C+Francesco&amp;searchtype=author&amp;order=-announced_date_first">arXiv</a> and
   <a href="https://www.scopus.com/authid/detail.uri?authorId={{ site.author.scopus }}">Scopus</a>.{% endif %}
 </p>
@@ -21,7 +21,7 @@ body_class: research
   <li>
     <span class="pub-title">{{ p.title }}</span>
     <span class="pub-authors">{% for a in p.authors %}{% if a.me %}<strong>{{ a.name }}</strong>{% else %}{{ a.name }}{% endif %}{% unless forloop.last %}, {% endunless %}{% endfor %}{% if p.et_al %}, et al.{% endif %}{% if p.me_hidden %} (incl. <strong>{{ pubs.me_name }}</strong>){% endif %}</span>
-    <span class="pub-meta">{% if p.venue != "" %}<em>{{ p.venue }}</em>{% if p.ref != "" %} {{ p.ref }}{% endif %} {% endif %}({{ p.year }}){% if p.status != "" %} <span class="tag">{{ p.status }}</span>{% endif %}{% if p.doi %} · <a href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}{% if p.arxiv %} · <a href="https://arxiv.org/abs/{{ p.arxiv }}">arXiv:{{ p.arxiv }}</a>{% endif %}{% if p.ads %} · <a href="{{ p.ads }}">ADS</a>{% endif %}</span>
+    <span class="pub-meta">{% if p.venue != "" %}<em>{{ p.venue }}</em>{% if p.ref != "" %} {{ p.ref }}{% endif %} {% endif %}({{ p.year }}){% if p.status != "" %} <span class="tag">{{ p.status }}</span>{% endif %}{% if p.doi %} · <a href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}{% if p.arxiv %} · <a href="https://arxiv.org/abs/{{ p.arxiv }}">arXiv:{{ p.arxiv }}</a>{% endif %}{% if p.ads %} · <a href="{{ p.ads }}">SciX</a>{% endif %}</span>
   </li>
   {% endfor %}
 </ol>

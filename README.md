@@ -20,17 +20,17 @@ Each page is a Markdown file:
 
 ## Publication list
 
-The papers on the Research page come from NASA ADS. Every Monday, and on every
+The papers on the Research page come from SciX (scixplorer.org, the successor of NASA ADS). Every Monday, and on every
 push, the workflow in `.github/workflows/pages.yml` runs
-`scripts/update_publications.py`. The script asks ADS for papers linked to the
+`scripts/update_publications.py`. The script asks SciX for papers linked to the
 ORCID or by name and sorts them into first-author papers, co-authored papers,
 accepted/submitted preprints and conference proceedings.
 
 - The query, papers to leave out and other settings are at the top of the script.
-- ADS finds papers by ORCID only once they are claimed in ADS
-  (ui.adsabs.harvard.edu → ORCID).
+- SciX finds papers by ORCID only once they are claimed in SciX
+  (scixplorer.org → ORCID).
 - `_data/publications.json` in the repository holds a list taken from the CV. It
-  is used until the ADS token is set up, and whenever the token is missing.
+  is used until the SciX token is set up, and whenever the token is missing.
 - To refresh the list now, open the **Actions** tab, pick **Build and deploy site**
   and click **Run workflow**.
 
@@ -40,7 +40,7 @@ accepted/submitted preprints and conference proceedings.
 2. Push these files to its `main` branch.
 3. In the repository, open **Settings → Pages** and set the source to
    **GitHub Actions**.
-4. Create an ADS API token (ui.adsabs.harvard.edu → Account → Settings → API Token).
+4. Create a SciX API token (scixplorer.org → Account → Settings → API Token).
    In the repository, open **Settings → Secrets and variables → Actions**, click
    **New repository secret**, name it `ADS_TOKEN` and paste the token.
 

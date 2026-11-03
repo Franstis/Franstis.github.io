@@ -8,7 +8,7 @@ body_class: home
 
 <ul class="links">
   <li><a href="https://orcid.org/0000-0003-1189-2617">ORCID</a></li>
-  <li><a href="https://ui.adsabs.harvard.edu/search/q=orcid%3A0000-0003-1189-2617&amp;sort=date%20desc%2C%20bibcode%20desc">NASA ADS</a></li>
+  <li><a href="https://scixplorer.org/search?q=orcid%3A0000-0003-1189-2617&amp;sort=date+desc%2Cbibcode+desc">SciX</a></li>
   <li><a href="https://arxiv.org/search/?query=Pistis%2C+Francesco&amp;searchtype=author&amp;order=-announced_date_first">arXiv</a></li>
   <li><a href="https://www.scopus.com/authid/detail.uri?authorId=57747950400">Scopus</a></li>
   <li><a href="mailto:Francesco.Pistis@ncbj.gov.pl">Email</a></li>

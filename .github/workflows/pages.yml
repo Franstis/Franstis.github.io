@@ -1,5 +1,5 @@
 # Builds the site and publishes it to GitHub Pages.
-# Runs on every push, every Monday (to refresh the publication list from ADS),
+# Runs on every push, every Monday (to refresh the publication list from SciX),
 # and on demand from the Actions tab ("Run workflow").
 name: Build and deploy site
 
@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Update publication list from NASA ADS
+      - name: Update publication list from SciX
         env:
           ADS_TOKEN: ${{ secrets.ADS_TOKEN }}
         run: python3 scripts/update_publications.py

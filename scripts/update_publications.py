@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Fetch the publication list from NASA ADS and write _data/publications.json.
+"""Fetch the publication list from SciX (NASA ADS) and write _data/publications.json.
 
 Papers are grouped into first-author papers, co-authored papers, accepted and
 submitted preprints, and conference proceedings. The Research page is built
 from that file.
 
-Needs an ADS API token in the ADS_TOKEN environment variable
-(ADS → Account → Settings → API Token). Without one, the existing data file
+Needs a SciX API token in the ADS_TOKEN environment variable
+(scixplorer.org → Account → Settings → API Token; an ADS token works too). Without one, the existing data file
 is left untouched.
 
 Usage:
-  python3 scripts/update_publications.py               # query ADS
-  python3 scripts/update_publications.py --input F.json  # use saved ADS docs instead
+  python3 scripts/update_publications.py               # query SciX
+  python3 scripts/update_publications.py --input F.json  # use saved SciX docs instead
 """
 import argparse
 import datetime
@@ -27,7 +27,7 @@ import urllib.request
 # --- Settings ---------------------------------------------------------------
 
 # Papers linked to the ORCID, plus papers that list the author by name.
-# Claiming papers in ADS (ui.adsabs.harvard.edu → ORCID) makes the first part complete.
+# Claiming papers in SciX (scixplorer.org → ORCID) makes the first part complete.
 ADS_QUERY = 'orcid:0000-0003-1189-2617 OR author:"Pistis, F"'
 MY_SURNAME = "Pistis"
 
@@ -42,6 +42,7 @@ MAX_AUTHORS = 5
 
 # ----------------------------------------------------------------------------
 
+# SciX is served by the NASA ADS API
 ADS_URL = "https://api.adsabs.harvard.edu/v1/search/query"
 FIELDS = "bibcode,title,author,year,pub,volume,page,doi,identifier,doctype,property,comment"
 OUT_FILE = pathlib.Path(__file__).resolve().parent.parent / "_data" / "publications.json"
@@ -165,7 +166,7 @@ def entry(doc, group):
         "status": status(doc) if preprint else "",
         "doi": (doc.get("doi") or [None])[0],
         "arxiv": arxiv_id(doc),
-        "ads": f"https://ui.adsabs.harvard.edu/abs/{doc['bibcode']}/abstract" if doc.get("bibcode") else None,
+        "ads": f"https://scixplorer.org/abs/{doc['bibcode']}/abstract" if doc.get("bibcode") else None,
     }
 
 
@@ -202,7 +203,7 @@ def main():
 
     data = build(docs, args.source)
     if not any(g["items"] for g in data["groups"]):
-        print("ADS returned no publications; keeping the existing list.", file=sys.stderr)
+        print("SciX returned no publications; keeping the existing list.", file=sys.stderr)
         return 1
     OUT_FILE.parent.mkdir(exist_ok=True)
     OUT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
