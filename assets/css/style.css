@@ -8,11 +8,11 @@
   --accent-soft: #e9eff8;
   /* Warm second colour, taken from the planet in the banner */
   --accent-2: #b8396a;
-  /* Citation types, as SciX splits them (stacked in this order on the chart) */
-  --cite-ref-ref: #23518f;
-  --cite-nonref-ref: #e0892e;
-  --cite-ref-nonref: #1d7a6f;
-  --cite-nonref-nonref: #7b4fb3;
+  /* Chart series, in stacking order (bottom first), shared by both charts */
+  --series-1: #23518f;
+  --series-2: #e0892e;
+  --series-3: #1d7a6f;
+  --series-4: #7b4fb3;
   --shadow: 0 1px 2px rgba(20, 28, 45, 0.06), 0 8px 24px rgba(20, 28, 45, 0.08);
   /* The banner is always dark: it sits on the photo in both themes */
   --banner-bg: #0b1024;
@@ -32,10 +32,10 @@
     --accent: #8db4ef;
     --accent-soft: #1c2638;
     --accent-2: #f08cb0;
-    --cite-ref-ref: #8db4ef;
-    --cite-nonref-ref: #f0a35e;
-    --cite-ref-nonref: #2a8f82;
-    --cite-nonref-nonref: #c9a6ff;
+    --series-1: #8db4ef;
+    --series-2: #f0a35e;
+    --series-3: #2a8f82;
+    --series-4: #c9a6ff;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
     color-scheme: dark;
   }
@@ -50,10 +50,10 @@
   --accent: #8db4ef;
   --accent-soft: #1c2638;
   --accent-2: #f08cb0;
-  --cite-ref-ref: #8db4ef;
-  --cite-nonref-ref: #f0a35e;
-  --cite-ref-nonref: #2a8f82;
-  --cite-nonref-nonref: #c9a6ff;
+  --series-1: #8db4ef;
+  --series-2: #f0a35e;
+  --series-3: #2a8f82;
+  --series-4: #c9a6ff;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
 }
@@ -518,6 +518,9 @@ li { margin: 0.35em 0; }
   margin: 20px 0 28px;
 }
 .chart {
+  /* Plots sit at the bottom, so both charts line up whatever their legend */
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 16px 18px 14px;
   background: var(--surface);
@@ -536,14 +539,16 @@ li { margin: 0.35em 0; }
 }
 .chart-legend li { display: flex; align-items: center; gap: 6px; }
 .key { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
-.key-other, .seg.seg-other { background: var(--accent-2); }
-.key-ref-ref, .seg.seg-ref-ref { background: var(--cite-ref-ref); }
-.key-nonref-ref, .seg.seg-nonref-ref { background: var(--cite-nonref-ref); }
-.key-ref-nonref, .seg.seg-ref-nonref { background: var(--cite-ref-nonref); }
-.key-nonref-nonref, .seg.seg-nonref-nonref { background: var(--cite-nonref-nonref); }
+/* Same colour order on both charts: refereed first, then the others */
+.key-refereed, .seg.seg-refereed, .key-ref-ref, .seg.seg-ref-ref { background: var(--series-1); }
+.key-other, .seg.seg-other, .key-nonref-ref, .seg.seg-nonref-ref { background: var(--series-2); }
+.key-ref-nonref, .seg.seg-ref-nonref { background: var(--series-3); }
+.key-nonref-nonref, .seg.seg-nonref-nonref { background: var(--series-4); }
 
 /* The plot: gridlines with their values on the left, one column per year */
-.chart-plot { position: relative; height: 150px; margin: 18px 0 26px 28px; }
+.chart-plot { position: relative; height: 150px; margin: auto 0 26px 28px; }
+/* Space between the legend (or caption) and the plot, which comes last */
+.chart > :nth-last-child(2) { margin-bottom: 18px; }
 .chart-grid span {
   position: absolute; left: 0; right: 0; height: 0;
   border-top: 1px solid var(--border);

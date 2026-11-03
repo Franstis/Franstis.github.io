@@ -135,11 +135,13 @@ def post_ads(url, token, payload):
 
 # Citation types as SciX splits them (citing paper -> cited paper), in the
 # order they are stacked on the chart
+# (key, SciX name, legend label, short label for the tooltip)
 CITATION_TYPES = [
-    ("ref-ref", "refereed to refereed", "Refereed citations to refereed papers"),
-    ("nonref-ref", "nonrefereed to refereed", "Non-refereed citations to refereed papers"),
-    ("ref-nonref", "refereed to nonrefereed", "Refereed citations to non-refereed papers"),
-    ("nonref-nonref", "nonrefereed to nonrefereed", "Non-refereed citations to non-refereed papers"),
+    ("ref-ref", "refereed to refereed", "Refereed citations to refereed papers", "refereed → refereed"),
+    ("nonref-ref", "nonrefereed to refereed", "Non-refereed citations to refereed papers", "non-refereed → refereed"),
+    ("ref-nonref", "refereed to nonrefereed", "Refereed citations to non-refereed papers", "refereed → non-refereed"),
+    ("nonref-nonref", "nonrefereed to nonrefereed", "Non-refereed citations to non-refereed papers",
+     "non-refereed → non-refereed"),
 ]
 
 
@@ -149,7 +151,7 @@ def fetch_metrics(token, bibcodes):
         "bibcodes": bibcodes, "types": ["histograms", "indicators"], "histograms": ["citations"]})
     histogram = metrics["histograms"]["citations"]
     citations = {key: {int(y): int(n) for y, n in histogram.get(name, {}).items()}
-                 for key, name, _ in CITATION_TYPES}
+                 for key, name, _, _ in CITATION_TYPES}
     return citations, metrics["indicators"]["h"]
 
 
@@ -386,54 +388,57 @@ def pct(n, top):
     return round(100 * n / top, 1)
 
 
-def charts(grouped, citations):
-    """Per-year bars for the Publications tab, scaled to their axis."""
+# Papers chart: (key, legend label, short label for the tooltip)
+PAPER_TYPES = [
+    ("refereed", "Refereed papers", "refereed"),
+    ("other", "Non-refereed papers (preprints, proceedings)", "non-refereed"),
+]
+
+
+def year_chart(key, title, unit, note, types, per_year):
+    """One stacked bar per year; per_year: {year: [count for each of `types`]}."""
     this_year = datetime.date.today().year
-    papers = {}
-    for key, items in grouped.items():
-        kind = "refereed" if key in ("first_author", "coauthor") else "other"
-        for item in items:
-            if str(item["year"] or "").isdigit():
-                counts = papers.setdefault(int(item["year"]), {"refereed": 0, "other": 0})
-                counts[kind] += 1
-    if not papers:
-        return None
-    years = range(min(papers), max(max(papers), this_year) + 1)
+    years = sorted(per_year)
     # Label every year, or every other one (ending on the latest) when crowded
     label = lambda y: len(years) <= 10 or (this_year - y) % 2 == 0
-
-    zero = {"refereed": 0, "other": 0}
-    ticks = axis(max(sum(c.values()) for c in papers.values()))
-    out = {"papers": {
-        "total": sum(sum(c.values()) for c in papers.values()),
-        "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
+    top = axis(max(sum(c) for c in per_year.values()))[-1]
+    # Only the types with something to show get a colour and a legend entry
+    shown = [i for i in range(len(types)) if any(c[i] for c in per_year.values())]
+    return {
+        "id": key, "title": title, "note": note, "unit": unit,
+        "types": [{"key": types[i][0], "label": types[i][1]} for i in shown],
+        "ticks": [{"value": t, "pct": pct(t, top)} for t in axis(top)],
         "years": [{
-            "year": y, "label": label(y), **papers.get(y, zero),
-            "refereed_pct": pct(papers.get(y, zero)["refereed"], ticks[-1]),
-            "other_pct": pct(papers.get(y, zero)["other"], ticks[-1]),
+            "year": y, "label": label(y), "partial": y == this_year,
+            "count": sum(per_year[y]), "bar_pct": pct(sum(per_year[y]), top),
+            # Top segment first, as the bar is drawn from the top down
+            "segments": [{"key": types[i][0], "short": types[i][2], "count": per_year[y][i],
+                          "pct": pct(per_year[y][i], top)} for i in reversed(shown) if per_year[y][i]],
         } for y in years],
-    }}
+    }
+
+
+def charts(grouped, citations, h_index=None):
+    """Papers and citations per year for the Publications tab, drawn alike."""
+    papers = {}
+    for key, items in grouped.items():
+        kind = 0 if key in ("first_author", "coauthor") else 1
+        for item in items:
+            if str(item["year"] or "").isdigit():
+                papers.setdefault(int(item["year"]), [0, 0])[kind] += 1
+    if not papers:
+        return None
+    years = range(min(papers), max(max(papers), datetime.date.today().year) + 1)
+    total = sum(sum(c) for c in papers.values())
+    out = [year_chart("papers", "Papers per year", {"one": "paper", "many": "papers"},
+                      f"{total} in total", PAPER_TYPES, {y: papers.get(y, [0, 0]) for y in years})]
     if citations is not None:
         # citations: {type: {year: n}}, types as in CITATION_TYPES
-        per_year = {y: [citations[key].get(y, 0) for key, _, _ in CITATION_TYPES] for y in years}
-        ticks = axis(max(sum(c) for c in per_year.values()))
-        out["citations"] = {
-            "total": sum(sum(c) for c in per_year.values()),
-            # Only the types that have citations get a colour and a legend entry
-            "types": [{"key": key, "label": label_, "total": sum(per_year[y][i] for y in years)}
-                      for i, (key, _, label_) in enumerate(CITATION_TYPES)
-                      if any(per_year[y][i] for y in years)],
-            "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
-            "years": [{
-                "year": y, "label": label(y), "count": sum(per_year[y]), "partial": y == this_year,
-                "bar_pct": pct(sum(per_year[y]), ticks[-1]),
-                # Top segment first, as the bar is drawn from the top down
-                "segments": [{"key": key, "label": label_, "count": per_year[y][i],
-                              "pct": pct(per_year[y][i], ticks[-1])}
-                             for i, (key, _, label_) in reversed(list(enumerate(CITATION_TYPES)))
-                             if per_year[y][i]],
-            } for y in years],
-        }
+        per_year = {y: [citations[key].get(y, 0) for key, *_ in CITATION_TYPES] for y in years}
+        total = sum(sum(c) for c in per_year.values())
+        note = f"{total} in total" + (f" · h-index {h_index}" if h_index else "")
+        out.append(year_chart("citations", "Citations per year", {"one": "citation", "many": "citations"},
+                              note, [(k, label, short) for k, _, label, short in CITATION_TYPES], per_year))
     return out
 
 
@@ -458,7 +463,7 @@ def build(docs, source, citations=None, h_index=None, bibtex=None):
         "me_name": short_name(f"{MY_SURNAME}, F."),
         "groups": [{"key": k, "title": t, "items": grouped[k]} for k, t in GROUPS],
         "latest": recent,
-        "charts": charts(grouped, citations),
+        "charts": charts(grouped, citations, h_index),
         "h_index": h_index,
     }
 
