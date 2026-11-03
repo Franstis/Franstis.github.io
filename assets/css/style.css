@@ -173,6 +173,30 @@ html { scroll-behavior: smooth; }
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Tabs under the banner (Research: Publications / Data / Codes) */
+.subnav {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.subnav .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
+.subnav a {
+  padding: 12px 0 10px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.subnav a:hover { color: var(--text); }
+.subnav a[aria-current="page"] {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* Content */
 main { padding-top: 32px; padding-bottom: 56px; }
 main > h2:first-child { margin-top: 0.6em; }

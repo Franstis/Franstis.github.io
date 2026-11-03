@@ -1,7 +1,9 @@
 ---
 layout: default
-title: Research
+title: Publications
+heading: Research
 permalink: /research/
+subnav: research
 body_class: research
 ---
 {% assign pubs = site.data.publications %}
@@ -26,18 +28,3 @@ body_class: research
   {% endfor %}
 </ol>
 {% endif %}{% endfor %}
-
-<h2>Public data</h2>
-<ul>
-  <li><strong>VIPERS emission-line catalogue.</strong> Spectroscopic measurements of emission lines for
-    VIPERS galaxies, released with Pistis et al. (2024):
-    <a href="https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A+A/683/A203">CDS J/A+A/683/A203</a></li>
-</ul>
-
-<h2>Codes</h2>
-<ul>
-  {% for c in site.data.codes %}
-  <li><strong>{% if c.url %}<a href="{{ c.url }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}.</strong>
-    {{ c.description }}{% if c.paper %} Described in {% if c.paper_url %}<a href="{{ c.paper_url }}">{{ c.paper }}</a>{% else %}{{ c.paper }}{% endif %}.{% endif %}{% if c.zenodo_url %} Code on <a href="{{ c.zenodo_url }}">Zenodo</a>.{% endif %}{% if c.status %} <span class="tag">{{ c.status }}</span>{% endif %}</li>
-  {% endfor %}
-</ul>

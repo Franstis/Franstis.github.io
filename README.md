@@ -9,12 +9,14 @@ Each page is a Markdown file:
 | File | Page |
 |---|---|
 | `index.md` | Home |
-| `research.html` | Research (papers from `_data/publications.json`, public data, codes from `_data/codes.yml`) |
+| `research.html` | Research → Publications (from `_data/publications.json`) |
+| `research-data.html` | Research → Data |
+| `research-codes.html` | Research → Codes (from `_data/codes.yml`) |
 | `talks.md` | Talks and conferences |
 | `cv.md` | CV |
 | `contact.md` | Contact |
 
-- Site title, description, the top menu and the banner image are in `_config.yml`.
+- Site title, description, the top menu, the Research tabs and the banner image are in `_config.yml`.
   The banner image file goes in `assets/img/banner.jpg`.
 - The page template is `_layouts/default.html`; styles are in `assets/css/style.css`.
 

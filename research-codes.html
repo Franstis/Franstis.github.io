@@ -1,0 +1,15 @@
+---
+layout: default
+title: Codes
+heading: Research
+permalink: /research/codes/
+subnav: research
+body_class: research
+---
+<p class="lead">Software released with my papers.</p>
+<ul>
+  {% for c in site.data.codes %}
+  <li><strong>{% if c.url %}<a href="{{ c.url }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}.</strong>
+    {{ c.description }}{% if c.paper %} Described in {% if c.paper_url %}<a href="{{ c.paper_url }}">{{ c.paper }}</a>{% else %}{{ c.paper }}{% endif %}.{% endif %}{% if c.zenodo_url %} Code on <a href="{{ c.zenodo_url }}">Zenodo</a>.{% endif %}{% if c.status %} <span class="tag">{{ c.status }}</span>{% endif %}</li>
+  {% endfor %}
+</ul>

@@ -1,6 +1,6 @@
 title: Francesco Pistis
 description: Astrophysicist working on galaxy evolution, quasar spectroscopy and machine learning.
-url: "https://francescopistis.github.io"
+url: "https://franstis.github.io"
 baseurl: ""
 
 author:
@@ -24,7 +24,22 @@ nav:
   - title: Contact
     url: /contact/
 
+# Tabs shown under the banner on pages that set `subnav:` in their front matter
+subnav:
+  research:
+    - title: Publications
+      url: /research/
+    - title: Data
+      url: /research/data/
+    - title: Codes
+      url: /research/codes/
+
 markdown: kramdown
+
+# Builds /sitemap.xml for search engines
+plugins:
+  - jekyll-sitemap
+
 exclude:
   - README.md
   - scripts

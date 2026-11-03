@@ -12,7 +12,7 @@
     <div class="wrap">
       <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
       <nav class="site-nav" aria-label="Main">
-        {% for item in site.nav %}<a href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a>{% endfor %}
+        {% for item in site.nav %}{% assign current = false %}{% if page.url == item.url %}{% assign current = true %}{% elsif item.url != "/" and page.url contains item.url %}{% assign current = true %}{% endif %}<a href="{{ item.url | relative_url }}"{% if current %} aria-current="page"{% endif %}>{{ item.title }}</a>{% endfor %}
       </nav>
     </div>
   </header>
@@ -24,6 +24,14 @@
     </div>
     {% if page.url == '/' %}<a class="banner-scroll" href="#content" aria-label="Scroll to content">↓</a>{% endif %}
   </div>
+
+  {% assign tabs = site.subnav[page.subnav] %}{% if tabs %}
+  <nav class="subnav" aria-label="{{ page.subnav | capitalize }} sections">
+    <div class="wrap">
+      {% for tab in tabs %}<a href="{{ tab.url | relative_url }}"{% if page.url == tab.url %} aria-current="page"{% endif %}>{{ tab.title }}</a>{% endfor %}
+    </div>
+  </nav>
+  {% endif %}
 
   <main class="wrap" id="content">
 {{ content }}
