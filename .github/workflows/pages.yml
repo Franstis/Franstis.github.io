@@ -63,8 +63,28 @@ jobs:
           working_directory: _cv
           root_file: main.tex
 
+      # If the new publication list breaks the CV, show why (as warnings on the
+      # run's summary page) and compile with the list saved in the CV repository
+      - name: Report LaTeX errors and go back to the saved list
+        if: steps.pdf.outcome == 'failure'
+        working-directory: _cv
+        run: |
+          grep -A2 '^!' main.log | head -20 | while IFS= read -r line; do echo "::warning title=CV LaTeX error::$line"; done || true
+          sudo chown -R "$(id -u)" .
+          git checkout -- publications.tex
+          rm -f main.aux main.fdb_latexmk main.fls main.log main.out main.pdf
+
+      - name: Compile the CV PDF with the saved list
+        id: pdf_saved
+        if: steps.pdf.outcome == 'failure'
+        continue-on-error: true
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: _cv
+          root_file: main.tex
+
       - name: Add the CV PDF to the site
-        if: steps.pdf.outcome == 'success'
+        if: steps.pdf.outcome == 'success' || steps.pdf_saved.outcome == 'success'
         run: mkdir -p assets/cv && cp _cv/main.pdf assets/cv/Francesco_Pistis_CV.pdf
 
       # Overleaf gets the new list with Menu → GitHub → Pull GitHub changes

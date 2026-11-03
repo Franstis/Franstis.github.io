@@ -430,9 +430,27 @@ def build(docs, source, citations=None, h_index=None, bibtex=None):
 
 # --- The CV's Publications section (publications.tex) -------------------------
 
+# Characters pdfLaTeX cannot print as text (SciX writes e.g. "Ly&alpha;")
+TEX_SYMBOLS = {
+    "α": r"$\alpha$", "β": r"$\beta$", "γ": r"$\gamma$", "δ": r"$\delta$", "ε": r"$\epsilon$",
+    "η": r"$\eta$", "θ": r"$\theta$", "κ": r"$\kappa$", "λ": r"$\lambda$", "μ": r"$\mu$",
+    "ν": r"$\nu$", "π": r"$\pi$", "ρ": r"$\rho$", "σ": r"$\sigma$", "τ": r"$\tau$",
+    "φ": r"$\phi$", "χ": r"$\chi$", "ψ": r"$\psi$", "ω": r"$\omega$", "Λ": r"$\Lambda$",
+    "Ω": r"$\Omega$", "Δ": r"$\Delta$", "∼": r"$\sim$", "≃": r"$\simeq$", "≈": r"$\approx$",
+    "≥": r"$\geq$", "≤": r"$\leq$", "×": r"$\times$", "±": r"$\pm$", "−": "-", "⊙": r"$\odot$",
+    "∝": r"$\propto$", "→": r"$\rightarrow$", "°": r"$^\circ$", "Å": r"\AA{}", "\u2009": " ",
+    "\u00a0": "~", "\u200b": "",
+}
+
+
 def tex_text(text):
     """Text from SciX -> LaTeX: special characters escaped, $...$ math kept."""
     text = html.unescape(text)
+    # Inside $...$ a symbol needs no extra $ signs
+    text = re.sub(r"\$[^$]*\$", lambda m: "".join(
+        TEX_SYMBOLS.get(c, c).strip("$") if c in TEX_SYMBOLS else c for c in m.group(0)), text)
+    text = "".join(TEX_SYMBOLS.get(c, c) for c in text) if "$" not in text else re.sub(
+        r"(\$[^$]*\$)|([^$]+)", lambda m: m.group(1) or "".join(TEX_SYMBOLS.get(c, c) for c in m.group(2)), text)
     text = re.sub(r"(?i)<sub>(.*?)</sub>", r"$_{\1}$", text)
     text = re.sub(r"(?i)<sup>(.*?)</sup>", r"$^{\1}$", text)
     text = re.sub(r"<[^>]+>", "", text)
