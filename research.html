@@ -46,10 +46,10 @@ body_class: research
       <span class="chart-title">Citations per year</span>
       <span class="chart-note">{{ charts.citations.total }} in total{% if pubs.h_index %}, h-index {{ pubs.h_index }}{% endif %}, counted by SciX</span>
     </figcaption>
-    <ul class="chart-legend" aria-hidden="true">
+    {% if charts.citations.other_total > 0 %}<ul class="chart-legend" aria-hidden="true">
       <li><i class="key key-refereed"></i>To refereed papers</li>
       <li><i class="key key-other"></i>To preprints &amp; proceedings</li>
-    </ul>
+    </ul>{% else %}<p class="chart-note">All to refereed papers so far</p>{% endif %}
     <div class="chart-plot">
       <div class="chart-grid" aria-hidden="true">{% for t in charts.citations.ticks %}<span style="bottom: {{ t.pct }}%" data-v="{{ t.value }}"></span>{% endfor %}</div>
       <ol class="chart-bars">

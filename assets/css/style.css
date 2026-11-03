@@ -515,6 +515,7 @@ li { margin: 0.35em 0; }
 .chart figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
 .chart-title { font-weight: 600; }
 .chart-note { color: var(--muted); font-size: 0.85rem; }
+.chart > .chart-note { margin: 6px 0 0; }
 .chart-legend {
   display: flex; flex-wrap: wrap; gap: 4px 14px;
   margin: 6px 0 0; padding: 0; list-style: none;

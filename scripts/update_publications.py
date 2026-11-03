@@ -425,6 +425,7 @@ def charts(grouped, citations):
         ticks = axis(max(sum(c.values()) for c in per_year.values()))
         out["citations"] = {
             "total": sum(sum(c.values()) for c in per_year.values()),
+            "other_total": sum(c["other"] for c in per_year.values()),
             "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
             "years": [{
                 "year": y, "label": label(y), **per_year[y], "count": sum(per_year[y].values()),
