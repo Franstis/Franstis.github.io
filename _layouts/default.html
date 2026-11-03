@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title and page.title != "Home" %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body class="page-{{ page.body_class | default: 'default' }}">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <nav class="site-nav" aria-label="Main">
+        {% for item in site.nav %}<a href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a>{% endfor %}
+      </nav>
+    </div>
+  </header>
+
+  <div class="banner{% if page.url == '/' %} banner-home{% endif %}"{% if site.banner %} style="background-image: url('{{ site.banner | relative_url }}')"{% endif %}>
+    <div class="wrap">
+      <h1>{{ page.heading | default: page.title }}</h1>
+      {% if page.subtitle %}<p class="banner-subtitle">{{ page.subtitle }}</p>{% endif %}
+    </div>
+  </div>
+
+  <main class="wrap">
+{{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© {{ site.time | date: "%Y" }} {{ site.author.name }}</span>
+      <span class="footer-links">
+        <a href="https://orcid.org/{{ site.author.orcid }}">ORCID</a>
+        <a href="https://ui.adsabs.harvard.edu/search/q=orcid%3A{{ site.author.orcid }}&sort=date%20desc%2C%20bibcode%20desc">ADS</a>
+        <a href="https://arxiv.org/search/?query=Pistis%2C+Francesco&amp;searchtype=author&amp;order=-announced_date_first">arXiv</a>
+      </span>
+    </div>
+  </footer>
+</body>
+</html>

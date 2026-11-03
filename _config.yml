@@ -1,0 +1,30 @@
+title: Francesco Pistis
+description: Astrophysicist working on galaxy evolution, quasar spectroscopy and machine learning.
+url: "https://francescopistis.github.io"
+baseurl: ""
+
+author:
+  name: Francesco Pistis
+  orcid: 0000-0003-1189-2617
+  scopus: 57747950400
+
+# Header image shown behind the page titles. Remove this line for a plain dark banner.
+banner: /assets/img/banner.jpg
+
+# Top navigation, in order
+nav:
+  - title: Home
+    url: /
+  - title: Research
+    url: /research/
+  - title: Talks
+    url: /talks/
+  - title: CV
+    url: /cv/
+  - title: Contact
+    url: /contact/
+
+markdown: kramdown
+exclude:
+  - README.md
+  - scripts

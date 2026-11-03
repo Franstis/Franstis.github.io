@@ -1,0 +1,253 @@
+:root {
+  --bg: #fbfbf9;
+  --surface: #ffffff;
+  --text: #1d2330;
+  --muted: #5c6577;
+  --border: #e3e5ea;
+  --accent: #23518f;
+  --accent-soft: #e9eff8;
+  /* The banner is always dark: it sits on the photo in both themes */
+  --banner-bg: #0b1024;
+  --banner-text: #ffffff;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f131b;
+    --surface: #161b25;
+    --text: #e4e7ee;
+    --muted: #9aa3b5;
+    --border: #2a3140;
+    --accent: #8db4ef;
+    --accent-soft: #1c2638;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f131b;
+  --surface: #161b25;
+  --text: #e4e7ee;
+  --muted: #9aa3b5;
+  --border: #2a3140;
+  --accent: #8db4ef;
+  --accent-soft: #1c2638;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.65 var(--sans);
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+a { color: var(--accent); text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+/* Header */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.site-header .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+.site-title {
+  font: 600 1.3rem/1.2 var(--serif);
+  color: var(--text);
+  text-decoration: none;
+}
+.site-nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.site-nav a:hover { color: var(--text); }
+.site-nav a[aria-current="page"] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Banner with the page title. The background image is set from _config.yml;
+   the gradient below shows when there is none. */
+.banner {
+  position: relative;
+  background-color: var(--banner-bg);
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(120, 80, 200, 0.45), transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(40, 120, 200, 0.4), transparent 60%);
+  background-size: cover;
+  background-position: center;
+  color: var(--banner-text);
+}
+.banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(5, 8, 20, 0.25), rgba(5, 8, 20, 0.6));
+}
+.banner .wrap {
+  position: relative;
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+.banner-home .wrap {
+  padding-top: clamp(80px, 16vw, 150px);
+  padding-bottom: clamp(48px, 8vw, 80px);
+}
+.banner h1 {
+  margin: 0;
+  color: var(--banner-text);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+  text-wrap: balance;
+}
+.banner-home h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); }
+.banner-subtitle {
+  margin: 0.5em 0 0;
+  font-size: 1.1rem;
+  color: var(--banner-text);
+  opacity: 0.9;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Content */
+main { padding-top: 32px; padding-bottom: 56px; }
+main > h2:first-child { margin-top: 0.6em; }
+
+h1, h2, h3 { font-family: var(--serif); line-height: 1.25; font-weight: 600; }
+h1 { font-size: 2.1rem; margin: 0 0 0.3em; }
+h2 {
+  font-size: 1.35rem;
+  margin: 2.2em 0 0.7em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+h3 { font-size: 1.1rem; margin: 1.6em 0 0.5em; }
+
+.lead { font-size: 1.1rem; color: var(--muted); margin-top: 0; }
+
+ul, ol { padding-left: 1.3em; }
+li { margin: 0.35em 0; }
+
+/* Quick links row on the home page */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+.links li { margin: 0; }
+.links a {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.links a:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+/* Small label for talk type (oral, poster) */
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+
+/* Publication lists */
+.pub-source { color: var(--muted); font-size: 0.95rem; }
+.count {
+  margin-left: 4px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.pub-list li { margin: 1em 0; }
+.pub-list li > span { display: block; }
+.pub-title { font-weight: 600; }
+.pub-authors { color: var(--muted); }
+.pub-authors strong { color: var(--text); }
+.pub-meta { font-size: 0.95rem; }
+
+/* Timeline tables on the CV page */
+table { border-collapse: collapse; width: 100%; margin: 0.5em 0 1em; }
+td { vertical-align: top; padding: 6px 0; border-bottom: 1px solid var(--border); }
+td:first-child { width: 9.5em; padding-right: 16px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+thead { display: none; }
+
+.cv-embed {
+  width: 100%;
+  height: 80vh;
+  min-height: 480px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.button {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  font-weight: 600;
+}
+.button:hover { filter: brightness(1.1); }
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.site-footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.footer-links { display: flex; gap: 16px; }
+.site-footer a { color: var(--muted); }
+
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  h1 { font-size: 1.7rem; }
+  td:first-child { width: auto; white-space: normal; }
+  td { display: block; padding: 0; border: 0; }
+  tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--border); }
+}

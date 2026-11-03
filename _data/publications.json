@@ -1,0 +1,593 @@
+{
+  "source": "cv",
+  "updated": "2026-11-03",
+  "me_name": "Pistis F.",
+  "groups": [
+    {
+      "key": "first_author",
+      "title": "First-author papers",
+      "items": [
+        {
+          "title": "Automated quasar continuum estimation using neural networks: a comparative study of deep-learning architectures",
+          "authors": [
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Fumagalli M.",
+              "me": false
+            },
+            {
+              "name": "Fossati M.",
+              "me": false
+            },
+            {
+              "name": "Berg T.",
+              "me": false
+            },
+            {
+              "name": "Mangola E. S.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2025",
+          "venue": "A&A",
+          "ref": "698, A292",
+          "status": "",
+          "doi": "10.1051/0004-6361/202453377",
+          "arxiv": "2505.10976",
+          "ads": null
+        },
+        {
+          "title": "A comparative study of the fundamental metallicity relation. The impact of methodology on its observed evolution",
+          "authors": [
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Pollo A.",
+              "me": false
+            },
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Vergani D.",
+              "me": false
+            },
+            {
+              "name": "Hamed M.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2024",
+          "venue": "A&A",
+          "ref": "683, A203",
+          "status": "",
+          "doi": "10.1051/0004-6361/202346943",
+          "arxiv": "2312.00930",
+          "ads": null
+        },
+        {
+          "title": "The fundamental metallicity relation from SDSS (z ∼ 0) to VIPERS (z ∼ 0.7). Data selection or evolution",
+          "authors": [
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Pollo A.",
+              "me": false
+            },
+            {
+              "name": "Scodeggio M.",
+              "me": false
+            },
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Durkalec A.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2022",
+          "venue": "A&A",
+          "ref": "663, A162",
+          "status": "",
+          "doi": "10.1051/0004-6361/202142430",
+          "arxiv": "2206.02458",
+          "ads": null
+        }
+      ]
+    },
+    {
+      "key": "coauthor",
+      "title": "Co-authored papers",
+      "items": [
+        {
+          "title": "From simulations to observations. Methodology and data release of mock TNG50 galaxies at 0.3 &lt; z &lt; 0.7 for WEAVE-StePS",
+          "authors": [
+            {
+              "name": "Ikhsanova A.",
+              "me": false
+            },
+            {
+              "name": "Costantin L.",
+              "me": false
+            },
+            {
+              "name": "Pizzella A.",
+              "me": false
+            },
+            {
+              "name": "Corsini E. M.",
+              "me": false
+            },
+            {
+              "name": "Morelli L.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2025",
+          "venue": "A&A",
+          "ref": "703, A37",
+          "status": "",
+          "doi": "10.1051/0004-6361/202555132",
+          "arxiv": "2506.18997",
+          "ads": null
+        },
+        {
+          "title": "Attenuation proxy hidden in surface brightness-colour diagrams. A new strategy for the LSST era",
+          "authors": [
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Junais",
+              "me": false
+            },
+            {
+              "name": "Pollo A.",
+              "me": false
+            },
+            {
+              "name": "Boquien M.",
+              "me": false
+            },
+            {
+              "name": "Buat V.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2024",
+          "venue": "A&A",
+          "ref": "",
+          "status": "",
+          "doi": "10.1051/0004-6361/202348432",
+          "arxiv": "2401.12831",
+          "ads": null
+        },
+        {
+          "title": "Influence of star-forming galaxy selection on the galaxy main sequence",
+          "authors": [
+            {
+              "name": "Pearson W. J.",
+              "me": false
+            },
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Moutard T.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2023",
+          "venue": "A&A",
+          "ref": "679, A35",
+          "status": "",
+          "doi": "10.1051/0004-6361/202346396",
+          "arxiv": "2308.16605",
+          "ads": null
+        },
+        {
+          "title": "Decoding the IRX-β dust attenuation relation in star-forming galaxies at intermediate redshift",
+          "authors": [
+            {
+              "name": "Hamed M.",
+              "me": false
+            },
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Nanni A.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2023",
+          "venue": "A&A",
+          "ref": "679, A26",
+          "status": "",
+          "doi": "10.1051/0004-6361/202346976",
+          "arxiv": "2309.01819",
+          "ads": null
+        },
+        {
+          "title": "X-ray luminosity-star formation rate scaling relation: Constraints from the eROSITA Final Equatorial Depth Survey (eFEDS)",
+          "authors": [
+            {
+              "name": "Riccio G.",
+              "me": false
+            },
+            {
+              "name": "Yang G.",
+              "me": false
+            },
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Boquien M.",
+              "me": false
+            },
+            {
+              "name": "Junais",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2023",
+          "venue": "A&A",
+          "ref": "678, A164",
+          "status": "",
+          "doi": "10.1051/0004-6361/202346857",
+          "arxiv": "2309.03578",
+          "ads": null
+        },
+        {
+          "title": "SFR estimations from z = 0 to z = 0.9. A comparison of SFR calibrators for star-forming galaxies",
+          "authors": [
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Pollo A.",
+              "me": false
+            },
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Buat V.",
+              "me": false
+            },
+            {
+              "name": "Boquien M.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2022",
+          "venue": "A&A",
+          "ref": "667, A29",
+          "status": "",
+          "doi": "10.1051/0004-6361/202141701",
+          "arxiv": "2209.04390",
+          "ads": null
+        }
+      ]
+    },
+    {
+      "key": "preprints",
+      "title": "Accepted and submitted",
+      "items": [
+        {
+          "title": "Detection of metal absorption lines in quasar spectra: a neural network approach using U-Net",
+          "authors": [
+            {
+              "name": "Mangola E. S.",
+              "me": false
+            },
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Fumagalli M.",
+              "me": false
+            },
+            {
+              "name": "Fossati M.",
+              "me": false
+            },
+            {
+              "name": "Berg T.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2026",
+          "venue": "",
+          "ref": "",
+          "status": "Accepted",
+          "doi": null,
+          "arxiv": "2609.28072",
+          "ads": null
+        },
+        {
+          "title": "Extending the Little Red Dot population at intermediate redshift with VIPERS",
+          "authors": [
+            {
+              "name": "Lisiecki K.",
+              "me": false
+            },
+            {
+              "name": "Hryniewicz K.",
+              "me": false
+            },
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Michałowski M. J.",
+              "me": false
+            },
+            {
+              "name": "Cotter A. P.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2026",
+          "venue": "",
+          "ref": "",
+          "status": "Submitted",
+          "doi": null,
+          "arxiv": "2609.10319",
+          "ads": null
+        },
+        {
+          "title": "PILOT: Physically-Informed Line identificatiOn Tool. A physically motivated classifier for metal lines in quasar spectra",
+          "authors": [
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Fumagalli M.",
+              "me": false
+            },
+            {
+              "name": "Fossati M.",
+              "me": false
+            },
+            {
+              "name": "Mangola E. S.",
+              "me": false
+            },
+            {
+              "name": "Berg T.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2026",
+          "venue": "",
+          "ref": "",
+          "status": "Submitted",
+          "doi": null,
+          "arxiv": null,
+          "ads": null
+        },
+        {
+          "title": "Forecast for the detectability of patchy hydrogen reionization in WEAVE-QSO measurements of the Lyman-α forest power spectrum at redshift z ≥ 4",
+          "authors": [
+            {
+              "name": "Ma K.",
+              "me": false
+            },
+            {
+              "name": "Bolton J. S.",
+              "me": false
+            },
+            {
+              "name": "Iršič V.",
+              "me": false
+            },
+            {
+              "name": "Gaikwad P.",
+              "me": false
+            },
+            {
+              "name": "Pieri M. M.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2026",
+          "venue": "",
+          "ref": "",
+          "status": "Accepted",
+          "doi": "10.1093/mnras/stag2028",
+          "arxiv": "2608.13153",
+          "ads": null
+        }
+      ]
+    },
+    {
+      "key": "proceedings",
+      "title": "Conference proceedings",
+      "items": [
+        {
+          "title": "Continuum Reconstruction and Metal Absorber Identification in Quasar Observations: Neural Networks for Spectral Analysis",
+          "authors": [
+            {
+              "name": "Pistis F.",
+              "me": true
+            }
+          ],
+          "et_al": false,
+          "me_hidden": false,
+          "year": "2026",
+          "venue": "IAU Symposium",
+          "ref": "397, 41",
+          "status": "",
+          "doi": null,
+          "arxiv": null,
+          "ads": null
+        },
+        {
+          "title": "Energy Balance in Star-Forming Galaxies at Intermediate Redshift",
+          "authors": [
+            {
+              "name": "Hamed M.",
+              "me": false
+            },
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Nanni A.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2024",
+          "venue": "Conference proceedings",
+          "ref": "",
+          "status": "",
+          "doi": null,
+          "arxiv": null,
+          "ads": null
+        },
+        {
+          "title": "A Comparison of SFR Calibrators for Star-Forming Galaxies from z = 0 to z = 0.9",
+          "authors": [
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Pollo A.",
+              "me": false
+            },
+            {
+              "name": "Małek K.",
+              "me": false
+            },
+            {
+              "name": "Buat V.",
+              "me": false
+            },
+            {
+              "name": "Boquien M.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2022",
+          "venue": "Conference proceedings",
+          "ref": "",
+          "status": "",
+          "doi": null,
+          "arxiv": null,
+          "ads": null
+        },
+        {
+          "title": "The fundamental metallicity relation from z∼0 to z∼0.7: Selection or Evolution?",
+          "authors": [
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Pollo A.",
+              "me": false
+            },
+            {
+              "name": "Scodeggio M.",
+              "me": false
+            },
+            {
+              "name": "Figueira M.",
+              "me": false
+            },
+            {
+              "name": "Durkalec A.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2022",
+          "venue": "Conference proceedings",
+          "ref": "",
+          "status": "",
+          "doi": null,
+          "arxiv": null,
+          "ads": null
+        }
+      ]
+    }
+  ]
+}
