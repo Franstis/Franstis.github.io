@@ -111,10 +111,53 @@ a:hover { text-decoration-thickness: 2px; }
   padding-top: 44px;
   padding-bottom: 44px;
 }
-.banner-home .wrap {
-  padding-top: clamp(80px, 16vw, 150px);
-  padding-bottom: clamp(48px, 8vw, 80px);
+/* Home: the image fills the first screen, with the menu on top of it.
+   The name sits in the dark sky at the top so the figure stays visible. */
+.page-home .site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background: transparent;
+  border-bottom: 0;
 }
+.page-home .site-title,
+.page-home .site-nav a { color: var(--banner-text); }
+.page-home .site-nav a { opacity: 0.8; }
+.page-home .site-nav a:hover,
+.page-home .site-nav a[aria-current="page"] { color: var(--banner-text); opacity: 1; }
+.banner-home {
+  min-height: 100vh;
+  min-height: 100svh;
+  background-position: center bottom;
+  text-align: center;
+}
+.banner-home::before {
+  background: linear-gradient(to bottom, rgba(5, 8, 20, 0.6), rgba(5, 8, 20, 0.05) 50%, rgba(5, 8, 20, 0.3));
+}
+.banner-home .wrap {
+  padding-top: clamp(120px, 20vh, 220px);
+  padding-bottom: 80px;
+}
+.banner-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  color: var(--banner-text);
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+.banner-scroll:hover { background: rgba(255, 255, 255, 0.12); }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .banner h1 {
   margin: 0;
   color: var(--banner-text);

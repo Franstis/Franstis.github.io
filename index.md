@@ -2,7 +2,7 @@
 layout: default
 title: Home
 heading: Francesco Pistis
-subtitle: Postdoctoral researcher in astrophysics · National Centre for Nuclear Research (NCBJ), Warsaw
+subtitle: Postdoctoral researcher in astrophysics<br>National Centre for Nuclear Research (NCBJ), Warsaw
 body_class: home
 ---
 

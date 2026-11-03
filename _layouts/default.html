@@ -22,9 +22,10 @@
       <h1>{{ page.heading | default: page.title }}</h1>
       {% if page.subtitle %}<p class="banner-subtitle">{{ page.subtitle }}</p>{% endif %}
     </div>
+    {% if page.url == '/' %}<a class="banner-scroll" href="#content" aria-label="Scroll to content">↓</a>{% endif %}
   </div>
 
-  <main class="wrap">
+  <main class="wrap" id="content">
 {{ content }}
   </main>
 
