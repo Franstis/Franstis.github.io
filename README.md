@@ -9,7 +9,7 @@ Each page is a Markdown file:
 | File | Page |
 |---|---|
 | `index.md` | Home |
-| `research.html` | Research (papers from `_data/publications.json`, public data) |
+| `research.html` | Research (papers from `_data/publications.json`, public data, codes from `_data/codes.yml`) |
 | `talks.md` | Talks and conferences |
 | `cv.md` | CV |
 | `contact.md` | Contact |
