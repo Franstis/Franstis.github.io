@@ -495,6 +495,82 @@ li { margin: 0.35em 0; }
 .more-link span { display: inline-block; transition: transform 0.25s; }
 .more-link:hover span { transform: translateX(4px); }
 
+/* Papers and citations per year (Publications) --------------------------- */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  margin: 20px 0 28px;
+}
+.chart {
+  margin: 0;
+  padding: 16px 18px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 0;
+}
+.chart figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.chart-title { font-weight: 600; }
+.chart-note { color: var(--muted); font-size: 0.85rem; }
+.chart-legend {
+  display: flex; flex-wrap: wrap; gap: 4px 14px;
+  margin: 6px 0 0; padding: 0; list-style: none;
+  color: var(--muted); font-size: 0.8rem;
+}
+.chart-legend li { display: flex; align-items: center; gap: 6px; }
+.key { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
+.key-other, .seg.seg-other { background: var(--accent-2); }
+
+/* The plot: gridlines with their values on the left, one column per year */
+.chart-plot { position: relative; height: 150px; margin: 18px 0 26px 28px; }
+.chart-grid span {
+  position: absolute; left: 0; right: 0; height: 0;
+  border-top: 1px solid var(--border);
+}
+.chart-grid span::before {
+  content: attr(data-v);
+  position: absolute; right: calc(100% + 6px); top: -0.5em;
+  font-size: 0.72rem; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.chart-bars {
+  position: absolute; inset: 0;
+  display: flex; gap: 2px;
+  margin: 0; padding: 0; list-style: none;
+}
+.chart-col { position: relative; flex: 1; display: flex; justify-content: center; border-radius: 6px; outline-offset: 0; }
+.chart-col:hover, .chart-col:focus-visible { background: var(--accent-soft); }
+.chart-bar {
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
+  width: min(24px, 64%); height: 100%;
+}
+.seg { background: var(--accent); transform-origin: bottom; }
+.seg:first-child { border-radius: 4px 4px 0 0; }
+.chart-year {
+  position: absolute; top: 100%; margin-top: 6px;
+  font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.chart-tip {
+  position: absolute; bottom: calc(var(--h) + 8px); left: 50%; z-index: 2;
+  transform: translate(-50%, 4px);
+  padding: 6px 9px; border-radius: 8px;
+  background: var(--text); color: var(--bg);
+  font-size: 0.78rem; line-height: 1.35; white-space: nowrap;
+  box-shadow: var(--shadow);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.chart-tip strong { display: block; }
+.chart-col:first-child .chart-tip { left: 0; transform: translate(0, 4px); }
+.chart-col:last-child .chart-tip { left: auto; right: 0; transform: translate(0, 4px); }
+.chart-col:hover .chart-tip, .chart-col:focus-visible .chart-tip { opacity: 1; transform: translate(-50%, 0); }
+.chart-col:first-child:hover .chart-tip, .chart-col:first-child:focus-visible .chart-tip,
+.chart-col:last-child:hover .chart-tip, .chart-col:last-child:focus-visible .chart-tip { transform: none; }
+
+/* Bars grow from the baseline when the chart scrolls into view */
+.chart.reveal .seg { transform: scaleY(0); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i) * 70ms + 150ms); }
+.chart.reveal.in .seg { transform: none; }
+
 /* Search and filters (Publications, Talks) ------------------------------- */
 .filter-bar {
   display: flex;

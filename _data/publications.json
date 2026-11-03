@@ -713,5 +713,70 @@
       "ads": null,
       "abstract": "We present the first detailed forecasts for the detectability of patchy hydrogen reionization in the one-dimensional Lyα forest power spectrum to be measured by the WEAVE-QSO survey. Using the Sherwood-relics reionization simulations and a WEAVE-QSO survey configuration, we generate mock spectra in four redshift bins, z=4.0,4.2,4.4, and 4.6, in which relic ionization and temperature fluctuations from patchy hydrogen reionization enhance the Lyα forest power spectrum on large scales (i.e., at wavenumber k∼ 10<sup>-3</sup>,s km<sup>-1</sup>). Our Lyα forest pipeline forecasts the power spectrum covariance by considering sample size, spectral resolution, noise subtraction, continuum placement, metal contamination, and damping wings from high-column density absorbers. Applying our covariance forecast within a Bayesian parameter inference framework, we find that the signature of patchy hydrogen reionization should be detectable at a significance of ≃ 4.5σ. The forthcoming WEAVE-QSO 1D power spectrum measurements should therefore be able to directly detect and characterize the large-scale relic imprint of patchy hydrogen reionization in the Lyα forest power spectrum at z≥ 4."
     }
-  ]
+  ],
+  "charts": {
+    "papers": {
+      "total": 17,
+      "ticks": [
+        {
+          "value": 0,
+          "pct": 0.0
+        },
+        {
+          "value": 2,
+          "pct": 33.3
+        },
+        {
+          "value": 4,
+          "pct": 66.7
+        },
+        {
+          "value": 6,
+          "pct": 100.0
+        }
+      ],
+      "years": [
+        {
+          "year": 2022,
+          "label": true,
+          "refereed": 2,
+          "other": 2,
+          "refereed_pct": 33.3,
+          "other_pct": 33.3
+        },
+        {
+          "year": 2023,
+          "label": true,
+          "refereed": 3,
+          "other": 0,
+          "refereed_pct": 50.0,
+          "other_pct": 0.0
+        },
+        {
+          "year": 2024,
+          "label": true,
+          "refereed": 2,
+          "other": 1,
+          "refereed_pct": 33.3,
+          "other_pct": 16.7
+        },
+        {
+          "year": 2025,
+          "label": true,
+          "refereed": 2,
+          "other": 0,
+          "refereed_pct": 33.3,
+          "other_pct": 0.0
+        },
+        {
+          "year": 2026,
+          "label": true,
+          "refereed": 2,
+          "other": 3,
+          "refereed_pct": 33.3,
+          "other_pct": 50.0
+        }
+      ]
+    }
+  }
 }

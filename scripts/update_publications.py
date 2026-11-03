@@ -9,6 +9,9 @@ SciX can take a few weeks to add the journal version of a preprint, so
 preprints are also checked on arXiv (for "accepted"/"submitted" comments) and
 on Crossref (for a journal version with the same title and first author).
 
+The Publications tab also shows papers per year (from this list) and
+citations per year (from the SciX metrics API).
+
 Needs a SciX API token in the ADS_TOKEN environment variable
 (scixplorer.org → Account → Settings → API Token; an ADS token works too). Without one, the existing data file
 is left untouched.
@@ -51,6 +54,7 @@ MAX_AUTHORS = 5
 
 # SciX is served by the NASA ADS API
 ADS_URL = "https://api.adsabs.harvard.edu/v1/search/query"
+METRICS_URL = "https://api.adsabs.harvard.edu/v1/metrics"
 ARXIV_URL = "https://export.arxiv.org/api/query"
 CROSSREF_URL = "https://api.crossref.org/works"
 USER_AGENT = "publication-list/1.0 (+https://franstis.github.io)"
@@ -100,6 +104,23 @@ def fetch_ads(token):
         start += len(body["docs"])
         if not body["docs"] or start >= body["numFound"]:
             return docs
+
+
+def fetch_citations(token, bibcodes):
+    """Year -> citations the listed papers received that year (all citing papers)."""
+    body = json.dumps({"bibcodes": bibcodes, "types": ["histograms"],
+                       "histograms": ["citations"]}).encode()
+    req = urllib.request.Request(METRICS_URL, data=body, headers={
+        "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        histogram = json.load(resp)["histograms"]["citations"]
+    # Split into refereed/non-refereed citing and cited papers; add them up
+    years = {}
+    for kind, counts in histogram.items():
+        if "normalized" not in kind:
+            for year, n in counts.items():
+                years[int(year)] = years.get(int(year), 0) + int(n)
+    return years
 
 
 def get(url, params, tries=3):
@@ -291,7 +312,62 @@ def entry(doc, group):
     }
 
 
-def build(docs, source):
+def axis(top):
+    """Round tick values from 0 to at least `top` (at most 4 steps)."""
+    step = 1
+    while step * 4 < top:
+        step = step * 5 // 2 if str(step)[0] == "2" else step * 2
+    ticks = [0]
+    while ticks[-1] < max(top, 1):
+        ticks.append(ticks[-1] + step)
+    return ticks
+
+
+def pct(n, top):
+    return round(100 * n / top, 1)
+
+
+def charts(grouped, citations):
+    """Per-year bars for the Publications tab, scaled to their axis."""
+    this_year = datetime.date.today().year
+    papers = {}
+    for key, items in grouped.items():
+        kind = "refereed" if key in ("first_author", "coauthor") else "other"
+        for item in items:
+            if str(item["year"] or "").isdigit():
+                counts = papers.setdefault(int(item["year"]), {"refereed": 0, "other": 0})
+                counts[kind] += 1
+    if not papers:
+        return None
+    years = range(min(papers), max(max(papers), this_year) + 1)
+    # Label every year, or every other one (ending on the latest) when crowded
+    label = lambda y: len(years) <= 10 or (this_year - y) % 2 == 0
+
+    zero = {"refereed": 0, "other": 0}
+    ticks = axis(max(sum(c.values()) for c in papers.values()))
+    out = {"papers": {
+        "total": sum(sum(c.values()) for c in papers.values()),
+        "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
+        "years": [{
+            "year": y, "label": label(y), **papers.get(y, zero),
+            "refereed_pct": pct(papers.get(y, zero)["refereed"], ticks[-1]),
+            "other_pct": pct(papers.get(y, zero)["other"], ticks[-1]),
+        } for y in years],
+    }}
+    if citations is not None:
+        ticks = axis(max(citations.values(), default=0))
+        out["citations"] = {
+            "total": sum(citations.get(y, 0) for y in years),
+            "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
+            "years": [{
+                "year": y, "label": label(y), "count": citations.get(y, 0),
+                "pct": pct(citations.get(y, 0), ticks[-1]), "partial": y == this_year,
+            } for y in years],
+        }
+    return out
+
+
+def build(docs, source, citations=None):
     grouped = {key: [] for key, _ in GROUPS}
     recent = []
     for doc in docs:
@@ -312,6 +388,7 @@ def build(docs, source):
         "me_name": short_name(f"{MY_SURNAME}, F."),
         "groups": [{"key": k, "title": t, "items": grouped[k]} for k, t in GROUPS],
         "latest": recent,
+        "charts": charts(grouped, citations),
     }
 
 
@@ -331,7 +408,15 @@ def main():
         docs = fetch_ads(token)
 
     update_preprints(docs)
-    data = build(docs, args.source)
+    citations = None
+    if not args.input:
+        listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
+                  and d["bibcode"] not in EXCLUDE_BIBCODES]
+        try:
+            citations = fetch_citations(token, listed)
+        except Exception as err:
+            print(f"SciX metrics failed ({err}); the citations chart is left out.", file=sys.stderr)
+    data = build(docs, args.source, citations)
     if not any(g["items"] for g in data["groups"]):
         print("SciX returned no publications; keeping the existing list.", file=sys.stderr)
         return 1

@@ -30,6 +30,10 @@ push, the workflow in `.github/workflows/pages.yml` runs
 ORCID or by name and sorts them into first-author papers, co-authored papers,
 accepted/submitted preprints and conference proceedings.
 
+Above the list, two charts show papers per year (counted from the list) and
+citations per year (from the SciX metrics API, for the papers in the list).
+The citations chart only appears when the list comes from SciX.
+
 - The query, papers to leave out and other settings are at the top of the script.
 - SciX finds papers by ORCID only once they are claimed in SciX
   (scixplorer.org → ORCID).

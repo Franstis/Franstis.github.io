@@ -193,7 +193,7 @@
   }, { rootMargin: "0px 0px -6% 0px" });
 
   document.querySelectorAll(
-    "main > h2, main > section > h2, .lead, .stat, .card, .pub-list > li, .latest-list > li, .timeline-item, .contact-card, main > table"
+    "main > h2, main > section > h2, .lead, .stat, .card, .chart, .pub-list > li, .latest-list > li, .timeline-item, .contact-card, main > table"
   ).forEach(function (el) {
     // Stagger siblings that come into view together
     var index = Array.prototype.indexOf.call(el.parentNode.children, el);

@@ -17,6 +17,49 @@ body_class: research
   <a href="https://www.scopus.com/authid/detail.uri?authorId={{ site.author.scopus }}">Scopus</a>.{% endif %}
 </p>
 
+{% assign charts = pubs.charts %}{% if charts %}
+<div class="charts">
+  <figure class="chart">
+    <figcaption>
+      <span class="chart-title">Papers per year</span>
+      <span class="chart-note">{{ charts.papers.total }} in total</span>
+    </figcaption>
+    <ul class="chart-legend" aria-hidden="true">
+      <li><i class="key key-refereed"></i>Refereed</li>
+      <li><i class="key key-other"></i>Preprints &amp; proceedings</li>
+    </ul>
+    <div class="chart-plot">
+      <div class="chart-grid" aria-hidden="true">{% for t in charts.papers.ticks %}<span style="bottom: {{ t.pct }}%" data-v="{{ t.value }}"></span>{% endfor %}</div>
+      <ol class="chart-bars">
+        {% for y in charts.papers.years %}<li class="chart-col" tabindex="0" style="--h: {{ y.refereed_pct | plus: y.other_pct }}%; --i: {{ forloop.index0 }}">
+          <span class="chart-bar">{% if y.other > 0 %}<span class="seg seg-other" style="height: {{ y.other_pct }}%"></span>{% endif %}{% if y.refereed > 0 %}<span class="seg" style="height: {{ y.refereed_pct }}%"></span>{% endif %}</span>
+          <span class="chart-year" aria-hidden="true">{% if y.label %}{{ y.year }}{% endif %}</span>
+          <span class="chart-tip"><strong>{{ y.year }}</strong> {{ y.refereed }} refereed{% if y.other > 0 %}, {{ y.other }} preprint{% if y.other > 1 %}s{% endif %} or proceedings{% endif %}</span>
+        </li>{% endfor %}
+      </ol>
+    </div>
+  </figure>
+  {% if charts.citations %}
+  <figure class="chart">
+    <figcaption>
+      <span class="chart-title">Citations per year</span>
+      <span class="chart-note">{{ charts.citations.total }} in total, counted by SciX</span>
+    </figcaption>
+    <div class="chart-plot">
+      <div class="chart-grid" aria-hidden="true">{% for t in charts.citations.ticks %}<span style="bottom: {{ t.pct }}%" data-v="{{ t.value }}"></span>{% endfor %}</div>
+      <ol class="chart-bars">
+        {% for y in charts.citations.years %}<li class="chart-col" tabindex="0" style="--h: {{ y.pct }}%; --i: {{ forloop.index0 }}">
+          <span class="chart-bar">{% if y.count > 0 %}<span class="seg" style="height: {{ y.pct }}%"></span>{% endif %}</span>
+          <span class="chart-year" aria-hidden="true">{% if y.label %}{{ y.year }}{% endif %}</span>
+          <span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}</strong> {{ y.count }} citation{% if y.count != 1 %}s{% endif %}</span>
+        </li>{% endfor %}
+      </ol>
+    </div>
+  </figure>
+  {% endif %}
+</div>
+{% endif %}
+
 <div class="filter-bar" data-scope="#pubs" data-js hidden>
   <label class="search">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
