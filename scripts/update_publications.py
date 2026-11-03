@@ -13,6 +13,12 @@ The Publications tab also shows papers per year (from this list), citations
 per year and the h-index (from the SciX metrics API), and offers each paper's
 BibTeX entry (from the SciX export API).
 
+With --tex, the same papers are also written as the Publications section of the
+LaTeX CV (publications.tex in the Overleaf repository), in the \\pubentry style
+of its main.tex. Papers SciX does not list yet can be kept by hand in
+publications-extra.tex next to it; they are added to their group until SciX
+lists a paper with the same title.
+
 Needs a SciX API token in the ADS_TOKEN environment variable
 (scixplorer.org → Account → Settings → API Token; an ADS token works too). Without one, the existing data file
 is left untouched.
@@ -20,6 +26,7 @@ is left untouched.
 Usage:
   python3 scripts/update_publications.py               # query SciX
   python3 scripts/update_publications.py --input F.json  # use saved SciX docs instead
+  python3 scripts/update_publications.py --tex _cv/publications.tex  # also write the CV list
 """
 import argparse
 import datetime
@@ -50,6 +57,9 @@ INCLUDE_ABSTRACTS = False
 
 # Authors shown before "et al."
 MAX_AUTHORS = 5
+
+# Authors listed in the CV before "et al." (the CV lists surnames only)
+MAX_TEX_AUTHORS = 30
 
 # ----------------------------------------------------------------------------
 
@@ -82,6 +92,14 @@ LATEX = {
     r"\alpha": "α", r"\beta": "β", r"\gamma": "γ", r"\Lambda": "Λ",
     r"\mu": "μ", r"\odot": "⊙", r"\AA": "Å", r"\rm": "", r"\mathrm": "",
 }
+
+# Subsections of the CV's Publications section
+TEX_GROUPS = [
+    ("published", "Refereed --- Published"),
+    ("accepted", "Refereed --- Accepted"),
+    ("submitted", "Refereed --- Submitted"),
+    ("proceedings", "Proceedings"),
+]
 
 GROUPS = [
     ("first_author", "First-author papers"),
@@ -410,10 +428,108 @@ def build(docs, source, citations=None, h_index=None, bibtex=None):
     }
 
 
+# --- The CV's Publications section (publications.tex) -------------------------
+
+def tex_text(text):
+    """Text from SciX -> LaTeX: special characters escaped, $...$ math kept."""
+    text = html.unescape(text)
+    text = re.sub(r"(?i)<sub>(.*?)</sub>", r"$_{\1}$", text)
+    text = re.sub(r"(?i)<sup>(.*?)</sup>", r"$^{\1}$", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    parts = re.split(r"(\$[^$]*\$)", text)
+    return "".join(p if p.startswith("$") and len(p) > 1 else re.sub(r"(?<!\\)([&%#_])", r"\\\1", p)
+                   for p in parts)
+
+
+def tex_url(url):
+    return url.replace("&", "%26").replace("%", "\\%").replace("#", "\\#")
+
+
+def tex_group(doc):
+    group = group_of(doc)
+    if group in ("first_author", "coauthor"):
+        return "published"
+    if group == "preprints":
+        return "accepted" if status(doc) == "Accepted" else "submitted"
+    return group
+
+
+def tex_entry(doc, group):
+    names = [a.split(",")[0].strip() for a in doc.get("author") or []]
+    shown = [f"\\textbf{{{tex_text(n)}}}" if n.lower() == MY_SURNAME.lower() else tex_text(n)
+             for n in names[:MAX_TEX_AUTHORS]]
+    authors = ", ".join(shown)
+    if len(names) > MAX_TEX_AUTHORS:
+        authors += ", et al." + ("" if any(MY_SURNAME in n for n in names[:MAX_TEX_AUTHORS])
+                                 else f" (incl.\\ \\textbf{{{MY_SURNAME}}})")
+    title = tex_text(clean_text_keep_math((doc.get("title") or ["Untitled"])[0]))
+    doi, arxiv, bibcode = (doc.get("doi") or [None])[0], arxiv_id(doc), doc.get("bibcode") or ""
+    if group == "published" and doi:
+        link = f"\\href{{https://doi.org/{tex_url(doi)}}}{{{tex_text(venue(doc))}, {tex_text(doi)}}}"
+    elif group in ("accepted", "submitted"):
+        link = f"arXiv:\\href{{https://arxiv.org/abs/{arxiv}}}{{{arxiv}}}" if arxiv else group
+    else:
+        link = f"\\href{{https://scixplorer.org/abs/{tex_url(bibcode)}/abstract}}{{{tex_text(bibcode)}}}"
+    label = doc.get("year") if group in ("published", "proceedings") else group.capitalize()
+    return (f"\\pubentry{{{label}}}{{%\n    {authors}\\newline\n    \\textit{{{title}}}%\n}}{{{link}}}")
+
+
+def clean_text_keep_math(raw):
+    """SciX title with whitespace tidied; LaTeX math left for the CV."""
+    return re.sub(r"\s+", " ", raw).strip().rstrip(".")
+
+
+def extra_entries(path):
+    """Hand-written \\pubentry blocks from publications-extra.tex, by group."""
+    import update_cv  # same folder; reads LaTeX arguments
+    if not path.exists():
+        return {}
+    tex = update_cv.strip_comments(path.read_text(encoding="utf-8"))
+    found, group, pos = {}, "submitted", 0
+    pattern = re.compile(r"\\(subsection|pubentry)\*?(?![A-Za-z])")
+    while (m := pattern.search(tex, pos)):
+        count = 1 if m.group(1) == "subsection" else 3
+        args, pos = update_cv.read_args(tex, m.end(), count)
+        if m.group(1) == "subsection":
+            name = args[0].lower()
+            group = next((key for key, _ in TEX_GROUPS if key in name), group)
+            continue
+        italic = re.search(r"\\textit\s*\{", args[1])
+        title = ""
+        if italic:
+            inner, _ = update_cv.read_group(args[1], italic.end() - 1)
+            title = update_cv.plain(update_cv.to_html(inner))
+        found.setdefault(group, []).append((letters(title), tex[m.start():pos].strip()))
+    return found
+
+
+def write_tex(docs, path):
+    listed = [d for d in docs if d.get("bibcode") not in EXCLUDE_BIBCODES and tex_group(d)]
+    listed.sort(key=lambda d: str(d.get("year") or ""), reverse=True)  # keeps SciX order within a year
+    known = {letters(clean_text((d.get("title") or [""])[0])) for d in listed}
+    extras = extra_entries(path.parent / "publications-extra.tex")
+    lines = [
+        "% Publications, written from SciX by scripts/update_publications.py",
+        "% (website repository Franstis/Franstis.github.io). Do not edit: this file is",
+        "% replaced at every website build. Papers SciX does not list yet go in",
+        "% publications-extra.tex.",
+    ]
+    for key, title in TEX_GROUPS:
+        entries = [tex_entry(d, key) for d in listed if tex_group(d) == key]
+        entries += [text for name, text in extras.get(key, []) if name not in known]
+        if entries:
+            lines += ["", f"\\subsection{{{title}}}"]
+            for e in entries:
+                lines += ["", e]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Wrote {path}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", help="JSON file with a list of ADS docs, used instead of the API")
     parser.add_argument("--source", default="ads", help="label stored in the output (default: ads)")
+    parser.add_argument("--tex", help="also write the CV's Publications section to this .tex file")
     args = parser.parse_args()
 
     if args.input:
@@ -446,6 +562,8 @@ def main():
     OUT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
     counts = ", ".join(f"{g['key']}={len(g['items'])}" for g in data["groups"])
     print(f"Wrote {OUT_FILE.name}: {counts}")
+    if args.tex:
+        write_tex(docs, pathlib.Path(args.tex))
     return 0
 
 

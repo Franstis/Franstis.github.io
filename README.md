@@ -48,8 +48,15 @@ compiles the PDF behind the "Download the full CV" button.
 - Entries are read from `\cventry{date}{text}` and
   `\talkentry{date}{event (oral|poster|ePoster)}{title}` under each `\section`.
   The Publications and Talks sections become links to their own pages.
-- The build reads the private repository with a token saved as the `CV_TOKEN`
-  secret. Without it, the CV and Talks data saved in this repository
+- The CV's publication list is written from SciX: every build replaces
+  `publications.tex` in the CV repository (read by `\input{publications}` in
+  `main.tex`) and pushes it there when it changes. Get it in Overleaf with
+  **Menu → GitHub → Pull GitHub changes into Overleaf**. Papers SciX does not
+  list yet go in `publications-extra.tex`, under a `\subsection` named
+  Published, Accepted, Submitted or Proceedings; each one is left out once SciX
+  lists a paper with the same title.
+- The build reads (and writes `publications.tex` to) the private repository with
+  a token saved as the `CV_TOKEN` secret; it needs **Contents: Read and write**. Without it, the CV and Talks data saved in this repository
   (`_data/cv.json`, `_data/talks.json`) are used, and the download button opens
   the Drive copy set in `_config.yml`.
 
