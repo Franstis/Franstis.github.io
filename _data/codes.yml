@@ -1,5 +1,7 @@
 # Codes listed on the Research page, in order.
-# Add `url:` (GitHub, Zenodo, PyPI...) once a code is public; drop `status:` then.
+# paper_url: the paper on SciX (scixplorer.org/abs/arXiv:<id>/abstract follows it to the journal version).
+# zenodo_url: the Zenodo record. url: another home page (GitHub, PyPI...), linked from the name.
+# status: a label such as "Coming soon" for codes not released yet.
 
 # - name: PILOT
 #   description: Physically-Informed Line identificatiOn Tool, a physically motivated
@@ -10,12 +12,12 @@
 - name: U-Net absorber detection
   description: Neural network that finds metal absorption lines in quasar spectra.
   paper: Mangola et al. (2026)
-  paper_url: https://arxiv.org/abs/2609.28072
+  paper_url: https://scixplorer.org/abs/arXiv:2609.28072/abstract
   zenodo_url: https://zenodo.org/records/22711575
 
 - name: Quasar continuum networks
   description: Autoencoder, CNN and U-Net models that predict the continuum of quasar
     spectra between 1020 and 2000 Å, trained on WEAVE-QSO mocks.
   paper: Pistis et al. (2025)
-  paper_url: https://arxiv.org/abs/2505.10976
+  paper_url: https://scixplorer.org/abs/arXiv:2505.10976/abstract
   zenodo_url: https://zenodo.org/records/15011824
