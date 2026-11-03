@@ -8,6 +8,11 @@
   --accent-soft: #e9eff8;
   /* Warm second colour, taken from the planet in the banner */
   --accent-2: #b8396a;
+  /* Citation types, as SciX splits them (stacked in this order on the chart) */
+  --cite-ref-ref: #23518f;
+  --cite-nonref-ref: #e0892e;
+  --cite-ref-nonref: #1d7a6f;
+  --cite-nonref-nonref: #7b4fb3;
   --shadow: 0 1px 2px rgba(20, 28, 45, 0.06), 0 8px 24px rgba(20, 28, 45, 0.08);
   /* The banner is always dark: it sits on the photo in both themes */
   --banner-bg: #0b1024;
@@ -27,6 +32,10 @@
     --accent: #8db4ef;
     --accent-soft: #1c2638;
     --accent-2: #f08cb0;
+    --cite-ref-ref: #8db4ef;
+    --cite-nonref-ref: #f0a35e;
+    --cite-ref-nonref: #2a8f82;
+    --cite-nonref-nonref: #c9a6ff;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
     color-scheme: dark;
   }
@@ -41,6 +50,10 @@
   --accent: #8db4ef;
   --accent-soft: #1c2638;
   --accent-2: #f08cb0;
+  --cite-ref-ref: #8db4ef;
+  --cite-nonref-ref: #f0a35e;
+  --cite-ref-nonref: #2a8f82;
+  --cite-nonref-nonref: #c9a6ff;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
 }
@@ -524,6 +537,10 @@ li { margin: 0.35em 0; }
 .chart-legend li { display: flex; align-items: center; gap: 6px; }
 .key { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
 .key-other, .seg.seg-other { background: var(--accent-2); }
+.key-ref-ref, .seg.seg-ref-ref { background: var(--cite-ref-ref); }
+.key-nonref-ref, .seg.seg-nonref-ref { background: var(--cite-nonref-ref); }
+.key-ref-nonref, .seg.seg-ref-nonref { background: var(--cite-ref-nonref); }
+.key-nonref-nonref, .seg.seg-nonref-nonref { background: var(--cite-nonref-nonref); }
 
 /* The plot: gridlines with their values on the left, one column per year */
 .chart-plot { position: relative; height: 150px; margin: 18px 0 26px 28px; }
@@ -563,7 +580,7 @@ li { margin: 0.35em 0; }
   opacity: 0; pointer-events: none;
   transition: opacity 0.15s, transform 0.15s;
 }
-.chart-tip strong { display: block; }
+.chart-tip strong, .chart-tip span { display: block; }
 .chart-col:first-child .chart-tip { left: 0; transform: translate(0, 4px); }
 .chart-col:last-child .chart-tip { left: auto; right: 0; transform: translate(0, 4px); }
 .chart-col:hover .chart-tip, .chart-col:focus-visible .chart-tip { opacity: 1; transform: translate(-50%, 0); }

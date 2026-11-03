@@ -46,17 +46,16 @@ body_class: research
       <span class="chart-title">Citations per year</span>
       <span class="chart-note">{{ charts.citations.total }} in total{% if pubs.h_index %}, h-index {{ pubs.h_index }}{% endif %}, counted by SciX</span>
     </figcaption>
-    {% if charts.citations.other_total > 0 %}<ul class="chart-legend" aria-hidden="true">
-      <li><i class="key key-refereed"></i>To refereed papers</li>
-      <li><i class="key key-other"></i>To preprints &amp; proceedings</li>
-    </ul>{% else %}<p class="chart-note">All to refereed papers so far</p>{% endif %}
+    {% if charts.citations.types.size > 1 %}<ul class="chart-legend" aria-hidden="true">
+      {% for t in charts.citations.types %}<li><i class="key key-{{ t.key }}"></i>{{ t.label }}</li>{% endfor %}
+    </ul>{% elsif charts.citations.types.size == 1 %}<p class="chart-note">All {{ charts.citations.types[0].label | downcase }}</p>{% endif %}
     <div class="chart-plot">
       <div class="chart-grid" aria-hidden="true">{% for t in charts.citations.ticks %}<span style="bottom: {{ t.pct }}%" data-v="{{ t.value }}"></span>{% endfor %}</div>
       <ol class="chart-bars">
-        {% for y in charts.citations.years %}<li class="chart-col" tabindex="0" style="--h: {{ y.refereed_pct | plus: y.other_pct }}%; --i: {{ forloop.index0 }}">
-          <span class="chart-bar">{% if y.other > 0 %}<span class="seg seg-other" style="height: {{ y.other_pct }}%"></span>{% endif %}{% if y.refereed > 0 %}<span class="seg" style="height: {{ y.refereed_pct }}%"></span>{% endif %}</span>
+        {% for y in charts.citations.years %}<li class="chart-col" tabindex="0" style="--h: {{ y.bar_pct }}%; --i: {{ forloop.index0 }}">
+          <span class="chart-bar">{% for seg in y.segments %}<span class="seg seg-{{ seg.key }}" style="height: {{ seg.pct }}%"></span>{% endfor %}</span>
           <span class="chart-year" aria-hidden="true">{% if y.label %}{{ y.year }}{% endif %}</span>
-          <span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}: {{ y.count }} citation{% if y.count != 1 %}s{% endif %}</strong> {{ y.refereed }} to refereed papers{% if y.other > 0 %}, {{ y.other }} to preprints or proceedings{% endif %}</span>
+          <span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}: {{ y.count }} citation{% if y.count != 1 %}s{% endif %}</strong>{% for seg in y.segments reversed %}{% if charts.citations.types.size > 1 %}<span>{{ seg.count }} {{ seg.label | replace: " citations to ", " → " | replace: " papers", "" | downcase }}</span>{% endif %}{% endfor %}</span>
         </li>{% endfor %}
       </ol>
     </div>

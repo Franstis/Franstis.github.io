@@ -133,30 +133,24 @@ def post_ads(url, token, payload):
         return json.load(resp)
 
 
-def citations_per_year(token, bibcodes):
-    """Year -> citations the papers received that year (from any citing paper)."""
-    if not bibcodes:
-        return {}
-    histogram = post_ads(METRICS_URL, token, {
-        "bibcodes": bibcodes, "types": ["histograms"], "histograms": ["citations"]})["histograms"]["citations"]
-    # Split into refereed/non-refereed citing and cited papers; add them up
-    years = {}
-    for kind, counts in histogram.items():
-        if "normalized" not in kind:
-            for year, n in counts.items():
-                years[int(year)] = years.get(int(year), 0) + int(n)
-    return years
+# Citation types as SciX splits them (citing paper -> cited paper), in the
+# order they are stacked on the chart
+CITATION_TYPES = [
+    ("ref-ref", "refereed to refereed", "Refereed citations to refereed papers"),
+    ("nonref-ref", "nonrefereed to refereed", "Non-refereed citations to refereed papers"),
+    ("ref-nonref", "refereed to nonrefereed", "Refereed citations to non-refereed papers"),
+    ("nonref-nonref", "nonrefereed to nonrefereed", "Non-refereed citations to non-refereed papers"),
+]
 
 
-def fetch_metrics(token, docs):
-    """Citations per year to refereed papers and to the others, and the h-index."""
-    refereed = [d["bibcode"] for d in docs if group_of(d) in ("first_author", "coauthor")]
-    other = [d["bibcode"] for d in docs if group_of(d) not in ("first_author", "coauthor")]
-    h_index = post_ads(METRICS_URL, token, {
-        "bibcodes": refereed + other, "types": ["indicators"]})["indicators"]["h"]
-    citations = {"refereed": citations_per_year(token, refereed),
-                 "other": citations_per_year(token, other)}
-    return citations, h_index
+def fetch_metrics(token, bibcodes):
+    """Citations per year by type ({type: {year: n}}) and the h-index."""
+    metrics = post_ads(METRICS_URL, token, {
+        "bibcodes": bibcodes, "types": ["histograms", "indicators"], "histograms": ["citations"]})
+    histogram = metrics["histograms"]["citations"]
+    citations = {key: {int(y): int(n) for y, n in histogram.get(name, {}).items()}
+                 for key, name, _ in CITATION_TYPES}
+    return citations, metrics["indicators"]["h"]
 
 
 def fetch_bibtex(token, bibcodes):
@@ -420,17 +414,24 @@ def charts(grouped, citations):
         } for y in years],
     }}
     if citations is not None:
-        # citations: {"refereed": {year: n}, "other": {year: n}}
-        per_year = {y: {k: citations[k].get(y, 0) for k in ("refereed", "other")} for y in years}
-        ticks = axis(max(sum(c.values()) for c in per_year.values()))
+        # citations: {type: {year: n}}, types as in CITATION_TYPES
+        per_year = {y: [citations[key].get(y, 0) for key, _, _ in CITATION_TYPES] for y in years}
+        ticks = axis(max(sum(c) for c in per_year.values()))
         out["citations"] = {
-            "total": sum(sum(c.values()) for c in per_year.values()),
-            "other_total": sum(c["other"] for c in per_year.values()),
+            "total": sum(sum(c) for c in per_year.values()),
+            # Only the types that have citations get a colour and a legend entry
+            "types": [{"key": key, "label": label_, "total": sum(per_year[y][i] for y in years)}
+                      for i, (key, _, label_) in enumerate(CITATION_TYPES)
+                      if any(per_year[y][i] for y in years)],
             "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
             "years": [{
-                "year": y, "label": label(y), **per_year[y], "count": sum(per_year[y].values()),
-                "refereed_pct": pct(per_year[y]["refereed"], ticks[-1]),
-                "other_pct": pct(per_year[y]["other"], ticks[-1]), "partial": y == this_year,
+                "year": y, "label": label(y), "count": sum(per_year[y]), "partial": y == this_year,
+                "bar_pct": pct(sum(per_year[y]), ticks[-1]),
+                # Top segment first, as the bar is drawn from the top down
+                "segments": [{"key": key, "label": label_, "count": per_year[y][i],
+                              "pct": pct(per_year[y][i], ticks[-1])}
+                             for i, (key, _, label_) in reversed(list(enumerate(CITATION_TYPES)))
+                             if per_year[y][i]],
             } for y in years],
         }
     return out
@@ -612,11 +613,10 @@ def main():
     docs = drop_duplicates(docs)
     citations = h_index = bibtex = None
     if not args.input:
-        listed_docs = [d for d in docs if d.get("bibcode") and group_of(d)
-                       and d["bibcode"] not in EXCLUDE_BIBCODES]
-        listed = [d["bibcode"] for d in listed_docs]
+        listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
+                  and d["bibcode"] not in EXCLUDE_BIBCODES]
         try:
-            citations, h_index = fetch_metrics(token, listed_docs)
+            citations, h_index = fetch_metrics(token, listed)
         except Exception as err:
             print(f"SciX metrics failed ({err}); citations and h-index are left out.", file=sys.stderr)
         try:
