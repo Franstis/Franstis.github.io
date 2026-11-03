@@ -1,0 +1,274 @@
+{
+  "updated": "2026-11-03",
+  "sections": [
+    {
+      "title": "Work Experience",
+      "id": "work-experience",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "05/2026 – present",
+              "html": "<strong>Postdoctoral Researcher</strong> – National Centre for Nuclear Research (NCBJ)<br>Astrophysics Division (BP4), Warsaw, Poland"
+            },
+            {
+              "date": "05/2026 – present",
+              "html": "<strong>Affiliated Researcher</strong> – INAF – Osservatorio Astronomico di Brera, Milan, Italy"
+            },
+            {
+              "date": "03/2024 – 02/2026",
+              "html": "<strong>Postdoctoral Researcher</strong> – Università degli Studi di Milano-Bicocca<br>Physics Department (FIS/05), Milan, Italy<br><span class=\"muted\">Funding: NextGenerationEU – PRIN 2022 PNRR, CUP H53D23011030001 (PI: M. Fumagalli)</span>"
+            },
+            {
+              "date": "03/2024 – 02/2026",
+              "html": "<strong>Affiliated Researcher</strong> – INAF – Osservatorio di Astrofisica e Scienza dello Spazio, Bologna"
+            },
+            {
+              "date": "12/2023 – 04/2026",
+              "html": "<strong>Affiliated Researcher</strong> – National Centre for Nuclear Research (NCBJ)<br>Astrophysics Division (BP4), Warsaw, Poland"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Education",
+      "id": "education",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "2019 – 2023",
+              "html": "<strong>Ph.D. with Distinction</strong> in Physics – National Centre for Nuclear Research (NCBJ), Poland<br><em>Thesis:</em> “The fundamental metallicity relation through cosmic time: from z∼0 to z∼1”<br><em>Supervisors:</em> Prof. Agnieszka Pollo (NCBJ – UJ); Dr. Daniela Vergani (INAF, OAS)"
+            },
+            {
+              "date": "2014 – 2017",
+              "html": "<strong>Master&#x27;s Degree</strong> in Physics – Università degli Studi di Cagliari, Italy <span class=\"muted\">(104/110)</span><br><em>Thesis:</em> “Large dust grains at high redshifts: grey extinction at cosmological distances or dark energy?”<br><em>Supervisors:</em> Dr. Cesare Cecchi-Pestellini (INAF, OAP); Dr. Giacomo Mulas (INAF, OAC – CNRS, IRAP)"
+            },
+            {
+              "date": "2010 – 2014",
+              "html": "<strong>Bachelor&#x27;s Degree</strong> in Physics – Università degli Studi di Cagliari, Italy <span class=\"muted\">(103/110)</span><br><em>Thesis:</em> “The Chemistry of Dark Ages”<br><em>Supervisors:</em> Dr. Cesare Cecchi-Pestellini (INAF, OAP); Dr. Silvia Casu (INAF, OAC)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Publications",
+      "id": "publications",
+      "link": "/research/",
+      "groups": []
+    },
+    {
+      "title": "Research Data & Software",
+      "id": "research-data-software",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "Code release",
+              "html": "<strong>Neural networks for detection of absorption lines in quasar spectra</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to Mangola et al. 2026)"
+            },
+            {
+              "date": "Code release",
+              "html": "<strong>Neural networks for quasar continuum fitting (different wavelength range from previous version)</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to Mangola et al. 2026)"
+            },
+            {
+              "date": "Code release",
+              "html": "<strong>Neural networks for quasar continuum fitting</strong> – <a href=\"https://zenodo.org/records/15011824\">Zenodo</a> (linked to Pistis et al. 2025)"
+            },
+            {
+              "date": "Data release",
+              "html": "<strong>Spectroscopic catalog</strong> (VIPERS, emission lines) – <a href=\"https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A+A/683/A203\">CDS: J/A+A/683/A203</a>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Grants & Funding",
+      "id": "grants-funding",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "03/2024 – 02/2026",
+              "html": "<strong>Nuovi metodi di analisi di dati spettroscopici con applicazioni a quasars ad alto redshift</strong><br>NextGenerationEU – PRIN 2022 PNRR, CUP H53D23011030001 – PI: Prof. M. Fumagalli <span class=\"tag\">CO-I</span>"
+            },
+            {
+              "date": "12/2019 – 12/2023",
+              "html": "<strong>VIPERS and Beyond: evolution of galaxies inside the large-scale structure through cosmic ages</strong><br>HARMONIA – National Science Center Poland, no. 2018/30/M/ST9/00757 – PI: Prof. A. Pollo <span class=\"tag\">CO-I</span>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Survey Collaborations",
+      "id": "survey-collaborations",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "2025 – present",
+              "html": "<strong>MOSAIC</strong> – Multi-Object Spectrograph for Astrophysics, Intergalactic-medium studies and Cosmology<br><span class=\"muted\">Science team: The Gestalt Survey</span>"
+            },
+            {
+              "date": "2025 – present",
+              "html": "<strong>WST</strong> – Wide-Field Spectroscopic Telescope<br><span class=\"muted\">Science team: Extragalactic – Cosmic Web Survey</span>"
+            },
+            {
+              "date": "2024 – present",
+              "html": "<strong>WEAVE</strong> – WHT Enhanced Area Velocity Explorer<br><span class=\"muted\">Science team: WEAVE-QSO</span>"
+            },
+            {
+              "date": "2019 – present",
+              "html": "<strong>VIPERS</strong> – VIMOS Public Extragalactic Redshift Survey<br><span class=\"muted\">ESO Large Program <span class=\"tag\">CO-I</span></span>"
+            },
+            {
+              "date": "2021 – 2023",
+              "html": "<strong>LSST / Rubin Observatory</strong> – Phase 2, Data Preview 0 (DP0.2)<br><span class=\"muted\">Rubin Observatory, Legacy Survey of Space and Time <span class=\"tag\">Delegate</span></span>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Scientific Service",
+      "id": "scientific-service",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "Internal reviewer",
+              "html": "<strong>WEAVE</strong> survey"
+            },
+            {
+              "date": "Prize",
+              "html": "<strong>STER Internationalization of Doctoral Schools</strong> (07/2022 – 09/2023)<br><span class=\"muted\">Narodowej Agencji Wymiany Akademickiej (NAWA), Poland</span>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Research Visits",
+      "id": "research-visits",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "01 – 02/2023",
+              "html": "<strong>Osservatorio di Astrofisica e Scienza dello Spazio</strong>, INAF Bologna, Italy<br><span class=\"muted\">Host: Dr. Daniela Vergani – Funding: STER (NAWA), Poland</span>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Selected Talks & Conferences",
+      "id": "selected-talks-conferences",
+      "link": "/talks/",
+      "groups": []
+    },
+    {
+      "title": "Schools & Workshops",
+      "id": "schools-workshops",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "09/2024",
+              "html": "<strong>Artificial intelligence and modern physics: a two-way connection</strong><br><span class=\"muted\">University of Milano-Bicocca; University and Polytechnic of Bari</span>"
+            },
+            {
+              "date": "07/2022",
+              "html": "<strong>5th Cosmology School</strong> – Jagiellonian University, Cracow, Poland"
+            },
+            {
+              "date": "07/2021",
+              "html": "<strong>International Summer School on the Interstellar Medium of Galaxies, from the Epoch of Reionization to the Milky Way</strong><br><span class=\"muted\">PCMI – Programme National de Cosmologie et Galaxies (CNRS/INSU)</span>"
+            },
+            {
+              "date": "06/2021",
+              "html": "<strong>Summer School in Statistics for Astronomers</strong><br><span class=\"muted\">Center for Astrostatistics, Pennsylvania State University</span>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Teaching & Supervision",
+      "id": "teaching-supervision",
+      "link": null,
+      "groups": [
+        {
+          "title": "Teaching",
+          "entries": [
+            {
+              "date": "2018 – 2019",
+              "html": "<strong>Teaching Assistant</strong> – General Physics (Mechanics, Thermodynamics, Electromagnetism, Optics)<br>Bachelor&#x27;s Degrees in Physics, Biology, and Computer Science<br><span class=\"muted\">Università degli Studi di Cagliari, Italy</span>"
+            }
+          ]
+        },
+        {
+          "title": "Thesis Supervision",
+          "entries": [
+            {
+              "date": "2025/26",
+              "html": "<strong>Leonardo Colombo</strong> (Bachelor) – Università degli Studi di Milano-Bicocca<br><span class=\"muted\">Co-Supervisor (Supervisor: Dr. Michele Fumagalli)</span>"
+            },
+            {
+              "date": "2025/26",
+              "html": "<strong>Shayan Golchinsamadi</strong> (Master) – Università degli Studi di Milano-Bicocca<br><span class=\"muted\">Co-Supervisor (Supervisor: Dr. Matteo Fossati)</span>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Technical Skills",
+      "id": "technical-skills",
+      "link": null,
+      "groups": [
+        {
+          "title": null,
+          "entries": [
+            {
+              "date": "Languages",
+              "html": "<strong>Python</strong> (advanced) <span class=\"sep\">·</span> <strong>C / C++</strong> (intermediate) <span class=\"sep\">·</span> <strong>IDL</strong> (intermediate) <span class=\"sep\">·</span> <strong>ROOT</strong> (intermediate) <span class=\"sep\">·</span> <strong>Fortran</strong> (intermediate)"
+            },
+            {
+              "date": "Python packages",
+              "html": "TensorFlow · PyTorch · Sklearn · Specutils · pPXF · Pandas · Seaborn · Multiprocessing"
+            },
+            {
+              "date": "Tools",
+              "html": "Git · LaTeX· TOPCAT · DS9 · IRAF"
+            },
+            {
+              "date": "Languages",
+              "html": "<strong>Italian</strong> (native) <span class=\"sep\">·</span> <strong>English</strong> (fluent) <span class=\"sep\">·</span> <strong>Polish</strong> (basic)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

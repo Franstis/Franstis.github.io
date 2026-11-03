@@ -1,13 +1,14 @@
 # Builds the site and publishes it to GitHub Pages.
-# Runs on every push, every Monday (to refresh the publication list from SciX),
-# and on demand from the Actions tab ("Run workflow").
+# Runs on every push, every day (to refresh the publication list from SciX and
+# the CV from the Overleaf repository), and on demand from the Actions tab
+# ("Run workflow").
 name: Build and deploy site
 
 on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 5 * * 1"
+    - cron: "0 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -24,6 +25,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # The CV repository is private: CV_TOKEN is a read-only token for it.
+      # Without the token the step fails and the CV and Talks data in this
+      # repository are used as they are.
+      - name: Get the CV from Overleaf (Franstis/Academic-CV)
+        id: cv
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: Franstis/Academic-CV
+          token: ${{ secrets.CV_TOKEN }}
+          path: _cv
+
+      - name: Update CV and talks from the LaTeX CV
+        if: steps.cv.outcome == 'success'
+        run: python3 scripts/update_cv.py _cv/main.tex
+
+      - name: Compile the CV PDF
+        id: pdf
+        if: steps.cv.outcome == 'success'
+        continue-on-error: true
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: _cv
+          root_file: main.tex
+
+      - name: Add the CV PDF to the site
+        if: steps.pdf.outcome == 'success'
+        run: mkdir -p assets/cv && cp _cv/main.pdf assets/cv/Francesco_Pistis_CV.pdf
 
       - name: Update publication list from SciX
         env:

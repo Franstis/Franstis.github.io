@@ -1,0 +1,37 @@
+---
+layout: default
+title: CV
+permalink: /cv/
+heading: Curriculum vitae
+description: "Curriculum vitae of Francesco Pistis, postdoctoral researcher in astrophysics at NCBJ Warsaw."
+body_class: cv
+---
+{% comment %}Built from the LaTeX CV (Overleaf → GitHub) by scripts/update_cv.py{% endcomment %}
+{% assign cv = site.data.cv %}
+{% assign pdf = site.static_files | where: "path", site.cv_pdf | first %}
+<p class="cv-actions">
+  <a class="button" href="{% if pdf %}{{ site.cv_pdf | relative_url }}{% else %}{{ site.cv_pdf_fallback }}{% endif %}">Download the full CV (PDF)</a>
+</p>
+
+<nav class="links cv-jump" aria-label="CV sections">
+  {% for s in cv.sections %}<a href="{% if s.link %}{{ s.link | relative_url }}{% else %}#{{ s.id }}{% endif %}">{{ s.title | replace: "Selected ", "" }}{% if s.link %} →{% endif %}</a>{% endfor %}
+</nav>
+
+{% for s in cv.sections %}
+<section id="{{ s.id }}">
+<h2>{{ s.title }}</h2>
+{% if s.link contains "research" %}{% assign total = 0 %}{% for g in site.data.publications.groups %}{% assign total = total | plus: g.items.size %}{% endfor %}
+<p>{{ total }} papers, updated from SciX: see <a href="{{ s.link | relative_url }}">Research → Publications</a>.</p>
+{% elsif s.link %}
+<p>{{ site.data.talks.size }} talks and posters: see <a href="{{ s.link | relative_url }}">Talks</a>.</p>
+{% endif %}
+{% for g in s.groups %}{% if g.title %}<h3>{{ g.title }}</h3>{% endif %}
+<table>
+  <tbody>
+    {% for e in g.entries %}<tr><td>{{ e.date }}</td><td>{{ e.html }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endfor %}
+</section>
+{% endfor %}

@@ -17,6 +17,11 @@ author:
       url: https://www.brera.inaf.it
   topics: [Galaxy evolution, Quasar spectroscopy, Metal absorption lines, Machine learning]
 
+# CV PDF, compiled from the Overleaf CV when the site is built; the Drive copy is
+# linked instead whenever the compiled file is missing
+cv_pdf: /assets/cv/Francesco_Pistis_CV.pdf
+cv_pdf_fallback: https://drive.google.com/file/d/1gZzaZsPetGjbzrzx-y6X-gorZnhYKkYF/view
+
 # Picture shown when the site is shared (1200×630)
 share_image: /assets/img/share.jpg
 

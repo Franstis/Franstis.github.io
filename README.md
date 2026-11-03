@@ -12,15 +12,15 @@ Each page is a Markdown or HTML file:
 | `research.html` | Research → Publications (from `_data/publications.json`) |
 | `research-data.html` | Research → Data |
 | `research-codes.html` | Research → Codes (from `_data/codes.yml`) |
-| `talks.html` | Talks and conferences (from `_data/talks.yml`) |
-| `cv.md` | CV |
+| `talks.html` | Talks and conferences (from `_data/talks.json`, built from the CV) |
+| `cv.html` | CV (from `_data/cv.json`, built from the CV) |
 | `contact.html` | Contact |
 
 - Site title, description, the top menu, the Research tabs and the banner image are in `_config.yml`.
   The banner image file goes in `assets/img/banner.jpg`.
 - The page template is `_layouts/default.html`; styles are in `assets/css/style.css`;
   search, filters, copy buttons, the light/dark switch and animations are in `assets/js/site.js`.
-- To add a talk, add an entry at the top of `_data/talks.yml`.
+- To add a talk, add a `\talkentry` to the CV in Overleaf (see below).
 
 ## Publication list
 
@@ -34,6 +34,24 @@ Above the list, two charts show papers per year (counted from the list) and
 citations per year (from the SciX metrics API, for the papers in the list).
 The citations chart, the h-index and the "Copy BibTeX" buttons only appear
 when the list comes from SciX.
+
+## CV and talks (from Overleaf)
+
+The CV lives in Overleaf, synced to the private GitHub repository
+`Franstis/Academic-CV`. Every build (daily, and on every push here) reads its
+`main.tex` with `scripts/update_cv.py`, fills in the CV and Talks pages, and
+compiles the PDF behind the "Download the full CV" button.
+
+- After editing the CV in Overleaf, push it to GitHub (Overleaf: **Menu → GitHub
+  → Push Overleaf changes to GitHub**). The site picks it up within a day, or
+  straight away with **Run workflow** in the Actions tab.
+- Entries are read from `\cventry{date}{text}` and
+  `\talkentry{date}{event (oral|poster|ePoster)}{title}` under each `\section`.
+  The Publications and Talks sections become links to their own pages.
+- The build reads the private repository with a token saved as the `CV_TOKEN`
+  secret. Without it, the CV and Talks data saved in this repository
+  (`_data/cv.json`, `_data/talks.json`) are used, and the download button opens
+  the Drive copy set in `_config.yml`.
 
 ## Search engines and sharing
 
