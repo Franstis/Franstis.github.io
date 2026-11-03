@@ -9,7 +9,6 @@ body_class: contact
 
 - NCBJ: [Francesco.Pistis@ncbj.gov.pl](mailto:Francesco.Pistis@ncbj.gov.pl)
 - INAF: [Francesco.Pistis@inaf.it](mailto:Francesco.Pistis@inaf.it)
-- Personal: [pistisfrancesco@gmail.com](mailto:pistisfrancesco@gmail.com)
 
 ## Addresses
 

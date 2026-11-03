@@ -5,6 +5,10 @@ Papers are grouped into first-author papers, co-authored papers, accepted and
 submitted preprints, and conference proceedings. The Research page is built
 from that file.
 
+SciX can take a few weeks to add the journal version of a preprint, so
+preprints are also checked on arXiv (for "accepted"/"submitted" comments) and
+on Crossref (for a journal version with the same title and first author).
+
 Needs a SciX API token in the ADS_TOKEN environment variable
 (scixplorer.org → Account → Settings → API Token; an ADS token works too). Without one, the existing data file
 is left untouched.
@@ -21,8 +25,11 @@ import os
 import pathlib
 import re
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 
 # --- Settings ---------------------------------------------------------------
 
@@ -44,7 +51,10 @@ MAX_AUTHORS = 5
 
 # SciX is served by the NASA ADS API
 ADS_URL = "https://api.adsabs.harvard.edu/v1/search/query"
-FIELDS = "bibcode,title,author,year,pub,volume,page,doi,identifier,doctype,property,comment"
+ARXIV_URL = "https://export.arxiv.org/api/query"
+CROSSREF_URL = "https://api.crossref.org/works"
+USER_AGENT = "publication-list/1.0 (+https://franstis.github.io)"
+FIELDS ="bibcode,title,author,year,pub,volume,page,doi,identifier,doctype,property,comment"
 OUT_FILE = pathlib.Path(__file__).resolve().parent.parent / "_data" / "publications.json"
 
 JOURNALS = {
@@ -90,6 +100,88 @@ def fetch_ads(token):
         start += len(body["docs"])
         if not body["docs"] or start >= body["numFound"]:
             return docs
+
+
+def get(url, params, tries=3):
+    req = urllib.request.Request(f"{url}?{urllib.parse.urlencode(params)}",
+                                 headers={"User-Agent": USER_AGENT})
+    for attempt in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as err:
+            # Crossref and arXiv ask clients to slow down with 429/503
+            if err.code not in (429, 503) or attempt == tries - 1:
+                raise
+            time.sleep(5 * (attempt + 1))
+
+
+def arxiv_comments(ids):
+    """arXiv id -> author comment ("13 pages, 9 figures. Accepted in A&A")."""
+    if not ids:
+        return {}
+    ns = {"a": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
+    feed = ET.fromstring(get(ARXIV_URL, {"id_list": ",".join(ids), "max_results": len(ids)}))
+    comments = {}
+    for item in feed.findall("a:entry", ns):
+        m = re.search(r"(\d{4}\.\d{4,5})", item.findtext("a:id", "", ns))
+        if m:
+            comments[m.group(1)] = item.findtext("arxiv:comment", "", ns)
+    return comments
+
+
+def letters(text):
+    return re.sub(r"[^a-z0-9]", "", re.sub(r"<[^>]+>|\$[^$]*\$", "", text.lower()))
+
+
+def journal_version(doc):
+    """Look on Crossref for a journal article with the same title and first author."""
+    title = (doc.get("title") or [""])[0]
+    first = (doc.get("author") or [""])[0].split(",")[0].strip()
+    found = json.loads(get(CROSSREF_URL, {
+        "query.bibliographic": title, "query.author": first,
+        "filter": "type:journal-article", "rows": 5,
+        "select": "DOI,title,subtitle,author,container-title,volume,page,article-number,published",
+    }))["message"]["items"]
+    for item in found:
+        full = " ".join((item.get("title") or []) + (item.get("subtitle") or []))
+        family = ((item.get("author") or [{}])[0].get("family") or "")
+        if letters(full) == letters(title) and family.lower() == first.lower():
+            return item
+    return None
+
+
+def update_preprints(docs):
+    """Fill in what SciX does not have yet for preprints; network errors are skipped."""
+    preprints = [d for d in docs if group_of(d) == "preprints"]
+    try:
+        comments = arxiv_comments([i for i in map(arxiv_id, preprints) if i])
+    except Exception as err:
+        print(f"arXiv lookup failed ({err}); preprints keep the SciX comment.", file=sys.stderr)
+        comments = {}
+    for doc in preprints:
+        if comments.get(arxiv_id(doc)):
+            doc["comment"] = [comments[arxiv_id(doc)]]
+        try:
+            item = journal_version(doc)
+        except Exception as err:
+            print(f"Crossref lookup failed for {doc.get('bibcode')} ({err}).", file=sys.stderr)
+            continue
+        if not item:
+            continue
+        print(f"Journal version on Crossref: {doc.get('bibcode')} -> {item['DOI']}")
+        doc.update({
+            "doctype": "article",
+            "property": (doc.get("property") or []) + ["REFEREED"],
+            "pub": html.unescape((item.get("container-title") or [""])[0]),
+            "volume": item.get("volume"),
+            # Advance-access papers have an article code but no volume yet
+            "page": [item.get("article-number") or item.get("page")] if item.get("volume") else [],
+            "doi": [item["DOI"]],
+        })
+        year = (item.get("published") or {}).get("date-parts", [[None]])[0][0]
+        if year:
+            doc["year"] = str(year)
 
 
 def clean_title(raw):
@@ -201,6 +293,7 @@ def main():
             return 0
         docs = fetch_ads(token)
 
+    update_preprints(docs)
     data = build(docs, args.source)
     if not any(g["items"] for g in data["groups"]):
         print("SciX returned no publications; keeping the existing list.", file=sys.stderr)
