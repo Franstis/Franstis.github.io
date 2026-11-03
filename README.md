@@ -53,8 +53,8 @@ compiles the PDF behind the "Download the full CV" button.
   `main.tex`) and pushes it there when it changes. Get it in Overleaf with
   **Menu → GitHub → Pull GitHub changes into Overleaf**. Papers SciX does not
   list yet go in `publications-extra.tex`, under a `\subsection` named
-  Published, Accepted, Submitted or Proceedings; each one is left out once SciX
-  lists a paper with the same title.
+  Published, Accepted, Submitted or Proceedings; each one is removed from that
+  file automatically once SciX lists a paper with the same title.
 - The build reads (and writes `publications.tex` to) the private repository with
   a token saved as the `CV_TOKEN` secret; it needs **Contents: Read and write**. Without it, the CV and Talks data saved in this repository
   (`_data/cv.json`, `_data/talks.json`) are used, and the download button opens

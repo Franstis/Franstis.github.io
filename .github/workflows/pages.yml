@@ -87,15 +87,16 @@ jobs:
         if: steps.pdf.outcome == 'success' || steps.pdf_saved.outcome == 'success'
         run: mkdir -p assets/cv && cp _cv/main.pdf assets/cv/Francesco_Pistis_CV.pdf
 
-      # Overleaf gets the new list with Menu → GitHub → Pull GitHub changes
+      # Saves the new list, and publications-extra.tex without the papers SciX
+      # now lists. Overleaf gets them with Menu → GitHub → Pull GitHub changes
       - name: Save the publication list in the CV repository
         if: steps.pdf.outcome == 'success'
         continue-on-error: true
         working-directory: _cv
         run: |
-          git add publications.tex
+          git add publications.tex publications-extra.tex
           if git diff --cached --quiet; then
-            echo "publications.tex is unchanged"
+            echo "The publication list is unchanged"
             exit 0
           fi
           git -c user.name="github-actions[bot]" \

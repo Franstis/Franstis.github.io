@@ -16,8 +16,8 @@ BibTeX entry (from the SciX export API).
 With --tex, the same papers are also written as the Publications section of the
 LaTeX CV (publications.tex in the Overleaf repository), in the \\pubentry style
 of its main.tex. Papers SciX does not list yet can be kept by hand in
-publications-extra.tex next to it; they are added to their group until SciX
-lists a paper with the same title.
+publications-extra.tex next to it; they are added to their group, and taken
+out of that file once SciX lists a paper with the same title.
 
 Needs a SciX API token in the ADS_TOKEN environment variable
 (scixplorer.org → Account → Settings → API Token; an ADS token works too). Without one, the existing data file
@@ -133,17 +133,30 @@ def post_ads(url, token, payload):
         return json.load(resp)
 
 
-def fetch_metrics(token, bibcodes):
-    """Citations per year (year -> count) and the h-index of the listed papers."""
-    metrics = post_ads(METRICS_URL, token, {
-        "bibcodes": bibcodes, "types": ["histograms", "indicators"], "histograms": ["citations"]})
+def citations_per_year(token, bibcodes):
+    """Year -> citations the papers received that year (from any citing paper)."""
+    if not bibcodes:
+        return {}
+    histogram = post_ads(METRICS_URL, token, {
+        "bibcodes": bibcodes, "types": ["histograms"], "histograms": ["citations"]})["histograms"]["citations"]
     # Split into refereed/non-refereed citing and cited papers; add them up
     years = {}
-    for kind, counts in metrics["histograms"]["citations"].items():
+    for kind, counts in histogram.items():
         if "normalized" not in kind:
             for year, n in counts.items():
                 years[int(year)] = years.get(int(year), 0) + int(n)
-    return years, metrics["indicators"]["h"]
+    return years
+
+
+def fetch_metrics(token, docs):
+    """Citations per year to refereed papers and to the others, and the h-index."""
+    refereed = [d["bibcode"] for d in docs if group_of(d) in ("first_author", "coauthor")]
+    other = [d["bibcode"] for d in docs if group_of(d) not in ("first_author", "coauthor")]
+    h_index = post_ads(METRICS_URL, token, {
+        "bibcodes": refereed + other, "types": ["indicators"]})["indicators"]["h"]
+    citations = {"refereed": citations_per_year(token, refereed),
+                 "other": citations_per_year(token, other)}
+    return citations, h_index
 
 
 def fetch_bibtex(token, bibcodes):
@@ -407,13 +420,16 @@ def charts(grouped, citations):
         } for y in years],
     }}
     if citations is not None:
-        ticks = axis(max(citations.values(), default=0))
+        # citations: {"refereed": {year: n}, "other": {year: n}}
+        per_year = {y: {k: citations[k].get(y, 0) for k in ("refereed", "other")} for y in years}
+        ticks = axis(max(sum(c.values()) for c in per_year.values()))
         out["citations"] = {
-            "total": sum(citations.get(y, 0) for y in years),
+            "total": sum(sum(c.values()) for c in per_year.values()),
             "ticks": [{"value": t, "pct": pct(t, ticks[-1])} for t in ticks],
             "years": [{
-                "year": y, "label": label(y), "count": citations.get(y, 0),
-                "pct": pct(citations.get(y, 0), ticks[-1]), "partial": y == this_year,
+                "year": y, "label": label(y), **per_year[y], "count": sum(per_year[y].values()),
+                "refereed_pct": pct(per_year[y]["refereed"], ticks[-1]),
+                "other_pct": pct(per_year[y]["other"], ticks[-1]), "partial": y == this_year,
             } for y in years],
         }
     return out
@@ -515,12 +531,14 @@ def clean_text_keep_math(raw):
     return re.sub(r"\s+", " ", raw).strip().rstrip(".")
 
 
-def extra_entries(path):
-    """Hand-written \\pubentry blocks from publications-extra.tex, by group."""
+def extra_entries(raw):
+    """Hand-written \\pubentry blocks of publications-extra.tex, by group.
+
+    Each entry is (title key, its LaTeX as written, start, end in `raw`).
+    """
     import update_cv  # same folder; reads LaTeX arguments
-    if not path.exists():
-        return {}
-    tex = update_cv.strip_comments(path.read_text(encoding="utf-8"))
+    # Comments blanked out with spaces, so positions still match `raw`
+    tex = re.sub(r"(?<!\\)%.*", lambda m: " " * len(m.group(0)), raw)
     found, group, pos = {}, "submitted", 0
     pattern = re.compile(r"\\(subsection|pubentry)\*?(?![A-Za-z])")
     while (m := pattern.search(tex, pos)):
@@ -535,7 +553,7 @@ def extra_entries(path):
         if italic:
             inner, _ = update_cv.read_group(args[1], italic.end() - 1)
             title = update_cv.plain(update_cv.to_html(inner))
-        found.setdefault(group, []).append((letters(title), tex[m.start():pos].strip()))
+        found.setdefault(group, []).append((letters(title), raw[m.start():pos], m.start(), pos))
     return found
 
 
@@ -543,7 +561,9 @@ def write_tex(docs, path):
     listed = [d for d in docs if d.get("bibcode") not in EXCLUDE_BIBCODES and tex_group(d)]
     listed.sort(key=lambda d: str(d.get("year") or ""), reverse=True)  # keeps SciX order within a year
     known = {title_key(d) for d in listed}
-    extras = extra_entries(path.parent / "publications-extra.tex")
+    extra_path = path.parent / "publications-extra.tex"
+    extra_raw = extra_path.read_text(encoding="utf-8") if extra_path.exists() else ""
+    extras = extra_entries(extra_raw)
     lines = [
         "% Publications, written from SciX by scripts/update_publications.py",
         "% (website repository Franstis/Franstis.github.io). Do not edit: this file is",
@@ -552,13 +572,23 @@ def write_tex(docs, path):
     ]
     for key, title in TEX_GROUPS:
         entries = [tex_entry(d, key) for d in listed if tex_group(d) == key]
-        entries += [text for name, text in extras.get(key, []) if name not in known]
+        entries += [text.strip() for name, text, _, _ in extras.get(key, []) if name not in known]
         if entries:
             lines += ["", f"\\subsection{{{title}}}"]
             for e in entries:
                 lines += ["", e]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {path}")
+
+    # Extra papers SciX now lists are taken out of publications-extra.tex
+    listed_now = sorted((e for group in extras.values() for e in group if e[0] in known),
+                        key=lambda e: e[2], reverse=True)
+    for name, text, start, end in listed_now:
+        end += len(extra_raw[end:]) - len(extra_raw[end:].lstrip())  # and the blank lines after it
+        extra_raw = extra_raw[:start] + extra_raw[end:]
+        print(f"SciX lists it now, removed from {extra_path.name}: {text.split(chr(92) + 'textit', 1)[-1][:70]!r}")
+    if listed_now:
+        extra_path.write_text(extra_raw, encoding="utf-8")
 
 
 def main():
@@ -581,10 +611,11 @@ def main():
     docs = drop_duplicates(docs)
     citations = h_index = bibtex = None
     if not args.input:
-        listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
-                  and d["bibcode"] not in EXCLUDE_BIBCODES]
+        listed_docs = [d for d in docs if d.get("bibcode") and group_of(d)
+                       and d["bibcode"] not in EXCLUDE_BIBCODES]
+        listed = [d["bibcode"] for d in listed_docs]
         try:
-            citations, h_index = fetch_metrics(token, listed)
+            citations, h_index = fetch_metrics(token, listed_docs)
         except Exception as err:
             print(f"SciX metrics failed ({err}); citations and h-index are left out.", file=sys.stderr)
         try:
