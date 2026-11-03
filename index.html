@@ -1,0 +1,71 @@
+---
+layout: default
+title: Home
+heading: Francesco Pistis
+subtitle: Postdoctoral researcher in astrophysics<br>National Centre for Nuclear Research (NCBJ), Warsaw
+body_class: home
+actions:
+  - title: Explore my research
+    url: /research/
+  - title: View CV
+    url: /cv/
+---
+{% assign groups = site.data.publications.groups %}
+{% assign first = groups | where: "key", "first_author" | first %}
+{% assign co = groups | where: "key", "coauthor" | first %}
+{% assign refereed = first.items.size | plus: co.items.size %}
+
+<ul class="links">
+  <li><a href="https://orcid.org/{{ site.author.orcid }}">ORCID</a></li>
+  <li><a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a></li>
+  <li><a href="https://arxiv.org/search/?query=Pistis%2C+Francesco&amp;searchtype=author&amp;order=-announced_date_first">arXiv</a></li>
+  <li><a href="https://www.scopus.com/authid/detail.uri?authorId={{ site.author.scopus }}">Scopus</a></li>
+  <li><a href="{{ '/contact/' | relative_url }}">Email</a></li>
+</ul>
+
+<!-- Figures counted from the data files, so they stay current -->
+<ul class="stats">
+  <li class="stat"><a href="{{ '/research/' | relative_url }}"><span class="stat-value" data-count="{{ refereed }}">{{ refereed }}</span><span class="stat-label">refereed papers</span></a></li>
+  <li class="stat"><a href="{{ '/research/' | relative_url }}?filter=first_author"><span class="stat-value" data-count="{{ first.items.size }}">{{ first.items.size }}</span><span class="stat-label">as first author</span></a></li>
+  <li class="stat"><a href="{{ '/talks/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.talks.size }}">{{ site.data.talks.size }}</span><span class="stat-label">talks &amp; posters</span></a></li>
+  <li class="stat"><a href="{{ '/research/codes/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.codes.size }}">{{ site.data.codes.size }}</span><span class="stat-label">public codes</span></a></li>
+</ul>
+
+<h2>About me</h2>
+<p>I am a postdoctoral researcher in the Astrophysics Division (BP4) of the
+<a href="https://www.ncbj.gov.pl/en">National Centre for Nuclear Research</a> in Warsaw,
+and an affiliated researcher at INAF – Osservatorio Astronomico di Brera in Milan.</p>
+<p>I received my Ph.D. in Physics with distinction from NCBJ in 2023, as a member of
+the group studying the formation and evolution of galaxies. From 2024 to 2026 I was
+a postdoctoral researcher in the Physics Department of the Università degli Studi
+di Milano-Bicocca.</p>
+
+<h2>Research</h2>
+<p>I work mainly with spectroscopic data from large galaxy and quasar surveys.</p>
+<div class="cards">
+  <a class="card" href="{{ '/research/' | relative_url }}?q=quasar">
+    <h3>Machine learning for quasar spectra</h3>
+    <p>Neural networks for the automatic analysis of quasar spectra, such as continuum
+    estimation and the detection of metal absorption lines, for the WEAVE-QSO survey.</p>
+    <span class="card-more">Related papers <span aria-hidden="true">→</span></span>
+  </a>
+  <a class="card" href="{{ '/research/' | relative_url }}?q=metallicity">
+    <h3>Chemical evolution of galaxies</h3>
+    <p>How galaxies are enriched with metals, and how this links to their mass and star formation:
+    the fundamental metallicity relation from SDSS (z ∼ 0) to VIPERS (z ∼ 0.7).</p>
+    <span class="card-more">Related papers <span aria-hidden="true">→</span></span>
+  </a>
+</div>
+
+{% if site.data.publications.latest.size > 0 %}
+<h2>Latest papers</h2>
+<ol class="latest-list">
+  {% for p in site.data.publications.latest %}
+  <li>
+    <a href="{% if p.ads %}{{ p.ads }}{% elsif p.doi %}https://doi.org/{{ p.doi }}{% else %}https://arxiv.org/abs/{{ p.arxiv }}{% endif %}">{{ p.title }}</a>
+    <span class="latest-meta">{% for a in p.authors limit: 3 %}{{ a.name }}{% unless forloop.last %}, {% endunless %}{% endfor %}{% if p.authors.size > 3 or p.et_al %} et al.{% endif %} · {% if p.venue != "" %}{{ p.venue }}{% else %}arXiv{% endif %} {{ p.year }}{% if p.status != "" %} <span class="tag">{{ p.status }}</span>{% endif %}</span>
+  </li>
+  {% endfor %}
+</ol>
+<p><a class="more-link" href="{{ '/research/' | relative_url }}">All publications <span aria-hidden="true">→</span></a></p>
+{% endif %}

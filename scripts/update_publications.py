@@ -54,7 +54,7 @@ ADS_URL = "https://api.adsabs.harvard.edu/v1/search/query"
 ARXIV_URL = "https://export.arxiv.org/api/query"
 CROSSREF_URL = "https://api.crossref.org/works"
 USER_AGENT = "publication-list/1.0 (+https://franstis.github.io)"
-FIELDS ="bibcode,title,author,year,pub,volume,page,doi,identifier,doctype,property,comment"
+FIELDS = "bibcode,title,author,year,pub,volume,page,doi,identifier,doctype,property,comment,abstract"
 OUT_FILE = pathlib.Path(__file__).resolve().parent.parent / "_data" / "publications.json"
 
 JOURNALS = {
@@ -74,7 +74,7 @@ LATEX = {
     r"\geq": "≥", r"\ge": "≥", r"\leq": "≤", r"\le": "≤",
     r"\lt": "<", r"\gt": ">", r"\times": "×", r"\pm": "±",
     r"\alpha": "α", r"\beta": "β", r"\gamma": "γ", r"\Lambda": "Λ",
-    r"\mu": "μ", r"\odot": "⊙",
+    r"\mu": "μ", r"\odot": "⊙", r"\AA": "Å", r"\rm": "", r"\mathrm": "",
 }
 
 GROUPS = [
@@ -184,13 +184,41 @@ def update_preprints(docs):
             doc["year"] = str(year)
 
 
-def clean_title(raw):
+def clean_text(raw):
     text = re.sub(r"<[^>]+>", "", raw)
     for cmd in sorted(LATEX, key=len, reverse=True):
         text = re.sub(re.escape(cmd) + r"(?![A-Za-z])", LATEX[cmd], text)
     text = re.sub(r"[${}]", "", text)
-    text = re.sub(r"\s+", " ", text).strip().rstrip(".")
-    return html.escape(text, quote=False)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def clean_title(raw):
+    return html.escape(clean_text(raw).rstrip("."), quote=False)
+
+
+def clean_abstract(raw):
+    """Abstract as safe HTML: LaTeX turned into characters, ^ and _ into <sup>/<sub>."""
+    text = re.sub(r"(?i)<sub>(.*?)</sub>", r"_{\1}", raw)
+    text = re.sub(r"(?i)<sup>(.*?)</sup>", r"^{\1}", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    # Formatting commands go, their content stays (\text{O}, \mathrm{A}, \tiny ...)
+    text = re.sub(r"\\(?:text|textrm|textit|textbf|texttt|textup|mathrm|mathit|mathbf|mbox|emph|rm|it|bf|sc|tiny|small|left|right)(?![A-Za-z])\s*", "", text)
+    while re.search(r"\{\s*\{([^{}]*)\}\s*\}|\{\}", text):
+        text = re.sub(r"\{\s*\{([^{}]*)\}\s*\}", r"{\1}", text).replace("{}", "")
+    text = re.sub(r"\\(?:mathring|r)\s*\{?\s*A\s*\}?|\\AA(?![A-Za-z])", "Å", text)
+    text = text.replace("\\%", "%").replace("\\&", "&").replace("\\_", "_")
+    text = re.sub(r"\\[,;:! ]", " ", text)            # LaTeX spacing commands
+    text = re.sub(r"~(?=[^\W\d_]|\\)", " ", text)      # non-breaking space before a word or unit
+    text = text.replace("~", "∼")                      # otherwise "approximately"
+    for cmd in sorted(LATEX, key=len, reverse=True):
+        text = re.sub(re.escape(cmd) + r"(?![A-Za-z])", LATEX[cmd], text)
+    text = html.escape(text.replace("$", ""), quote=False)
+    for mark, tag in (("^", "sup"), ("_", "sub")):
+        text = re.sub(re.escape(mark) + r"(?:\{([^{}]*)\}|([\w.+−-]))",
+                      lambda m, tag=tag: f"<{tag}>{m.group(1) if m.group(1) is not None else m.group(2)}</{tag}>", text)
+    text = re.sub(r"[{}]", "", text)
+    text = re.sub(r"\\(?=[A-Za-z])", "", text)          # any command left: keep its name as text
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def short_name(full):
@@ -259,22 +287,31 @@ def entry(doc, group):
         "doi": (doc.get("doi") or [None])[0],
         "arxiv": arxiv_id(doc),
         "ads": f"https://scixplorer.org/abs/{doc['bibcode']}/abstract" if doc.get("bibcode") else None,
+        "abstract": clean_abstract(doc["abstract"]) if doc.get("abstract") else None,
     }
 
 
 def build(docs, source):
     grouped = {key: [] for key, _ in GROUPS}
+    recent = []
     for doc in docs:
         if doc.get("bibcode") in EXCLUDE_BIBCODES:
             continue
         group = group_of(doc)
         if group:
-            grouped[group].append(entry(doc, group))
+            item = entry(doc, group)
+            grouped[group].append(item)
+            # Only papers people can open (skips proceedings and unpublished drafts)
+            if group != "proceedings" and (item["doi"] or item["arxiv"]):
+                recent.append(item)
+    # Newest papers for the home page (sorted() keeps the SciX order within a year)
+    recent = sorted(recent, key=lambda i: str(i["year"] or ""), reverse=True)[:3]
     return {
         "source": source,
         "updated": datetime.date.today().isoformat(),
         "me_name": short_name(f"{MY_SURNAME}, F."),
         "groups": [{"key": k, "title": t, "items": grouped[k]} for k, t in GROUPS],
+        "latest": recent,
     }
 
 

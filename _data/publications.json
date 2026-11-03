@@ -39,7 +39,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202453377",
           "arxiv": "2505.10976",
-          "ads": null
+          "ads": null,
+          "abstract": "Context. Ongoing and upcoming large spectroscopic surveys are drastically increasing the number of observed quasar spectra, requiring the development of fast and accurate automated methods to estimate spectral continua. Aims. This study evaluates the performance of three neural networks (NN) - an autoencoder, a convolutional NN (CNN), and a U-Net - in predicting quasar continua within the rest-frame wavelength range of 1020 Å to 2000 Å. The ability to generalize and predict galaxy continua within the range of 3500 Å to 5500 Å is also tested. Methods. The performance of these architectures is evaluated using the absolute fractional flux error (AFFE) on a library of mock quasar spectra for the WEAVE survey, and on real data from the Early Data Release observations of the Dark Energy Spectroscopic Instrument (DESI) and the VIMOS Public Extragalactic Redshift Survey (VIPERS). Results. The autoencoder outperforms the U-Net, achieving a median AFFE of 0.009 for quasars. The best model also effectively recovers the Lyα optical depth evolution in DESI quasar spectra. With minimal optimization, the same architectures can be generalized to the galaxy case, with the autoencoder reaching a median AFFE of 0.014 and reproducing the D4000n break in DESI and VIPERS galaxies."
         },
         {
           "title": "A comparative study of the fundamental metallicity relation. The impact of methodology on its observed evolution",
@@ -73,7 +74,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202346943",
           "arxiv": "2312.00930",
-          "ads": null
+          "ads": null,
+          "abstract": "We used 5487 star-forming galaxies at redshift z∼0.63 extracted from the VIPERS and 143774 comparison galaxies in the local Universe from the GSWLC catalog. We employed two families of methods: parametric and non-parametric. In the former approaches, we compared the FMR projections plagued by observational biases on differently constructed control samples at various redshifts. Then, the metallicity difference between different redshifts in M*-SFR bins. In the latter approach, we related the metallicity and the normalized sSFR. The methodologies implemented to construct fair, complete samples for studying the MZR and the FMR produced consistent results showing a small, but still statistically significant evolution of both relations up to z∼0.63. In particular, we observed a systematic trend where the median metallicity of the sample at z=0.63 is lower than that of the local sample at the same M* and SFR. The average difference in the metallicity of the low and intermediate redshifts is approximately 1.8 times the metallicity standard deviation of the median, of the intermediate redshift sample, in M*-SFR bins. We confirmed this result using the Kolmogorov-Smirnov test. When we applied the M*-completeness criterion to catalogs, the metallicity difference in redshifts decreased to approximately 0.96 times the metallicity standard deviation of the median, thus not statistically significant. This result may be dominated by the limited parameter space, being the lower M* galaxies where the difference is larger out from the analysis. A careful reading of the results, and their underlying selection criteria, are crucial in studies of the mass-metallicity and FMRs."
         },
         {
           "title": "The fundamental metallicity relation from SDSS (z ∼ 0) to VIPERS (z ∼ 0.7). Data selection or evolution",
@@ -107,7 +109,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202142430",
           "arxiv": "2206.02458",
-          "ads": null
+          "ads": null,
+          "abstract": "Aims. We focus on how to homogenize the comparison between galaxy samples having different characteristics. We check the projections of the fundamental metallicity relation (FMR) and the evolution of these projections between a sample selected at z∼0 (SDSS) and z∼0.7 (VIPERS). We check, in particular, whether and to what extent selection criteria can affect the results. Methods. We checked the influence of different biases introduced either by physical constraints (evolution of the luminosity function and differences in the fraction of blue galaxies) or data selection (the signal-to-noise ratio and quality of the spectra) on the FMR and its projections. To separate the differences occurring due to the physical evolution of galaxies with redshift from the false evolution mimed by these biases, we first analyzed the effects of these biases individually on the SDSS sample, and next, starting from the SDSS data, we built a VIPERS-equivalent z ∼ 0 sample, replicating the main characteristics of VIPERS sample at z∼0.7 for a fair comparison. Results. We found that the FMR projections are all sensitive to biases introduced by the selection on S/N and the quality flags of the emission line measurements in the spectra, especially the [O iii]λ4959 line. The exception is the metallicity versus the sSFR plane which is insensitive to these biases. The evolution of the luminosity function introduces a bias only in the plane metallicity versus the star formation rate (SFR) while the fraction of blue galaxies has no impact on results."
         }
       ]
     },
@@ -115,6 +118,76 @@
       "key": "coauthor",
       "title": "Co-authored papers",
       "items": [
+        {
+          "title": "Detection of metal absorption lines in quasar spectra: a neural network approach using U-Net",
+          "authors": [
+            {
+              "name": "Mangola E. S.",
+              "me": false
+            },
+            {
+              "name": "Pistis F.",
+              "me": true
+            },
+            {
+              "name": "Fumagalli M.",
+              "me": false
+            },
+            {
+              "name": "Fossati M.",
+              "me": false
+            },
+            {
+              "name": "Berg T.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": false,
+          "year": "2026",
+          "venue": "A&A",
+          "ref": "715, A101",
+          "status": "",
+          "doi": "10.1051/0004-6361/202660827",
+          "arxiv": "2609.28072",
+          "ads": null,
+          "abstract": "Current and future large spectroscopic surveys are significantly enhancing the volume and resolution of quasar spectra that are observed, which requires the creation of efficient and precise automated techniques to detect absorption features. This study focuses on the detection of metal absorption features using a novel U-Net model on WEAVE-like mock spectra in the quasar rest-frame wavelength interval 1230 Å ≤ λ<sub>RF</sub> ≤ 3095 Å. We test the network performance for absorption detection both on ideal data and after simulating the continuum fitting step as applied on real data. The performance of these architectures is evaluated by the completeness, purity, and F1 score reached in bins of signal-to-noise (S/ N<sub>line</sub> ) for the absorption lines and with the absolute fractional flux error for the continuum. The ability to recover the correct line centers is also studied. The U-Net reaches scores of ≈ 90% for all metrics (completeness, purity, and F1 score) at S/ N<sub>line</sub> ≈ 4. All false positive detections with S/ N<sub>line</sub> ≥ 5 fall in the tails of the broad Lyα absorbers distribution of damped Lyα systems. The combination of continuum fitting and line detections has negligible effects on the detection performance at S/ N<sub>line</sub> ≥ 4. Our proposed U-Net architecture offers a competitive tool for the analysis of absorption lines in current and upcoming large spectroscopic surveys and is well-suited to the identification of any absorption line feature."
+        },
+        {
+          "title": "Forecast for the detectability of patchy hydrogen reionization in WEAVE-QSO measurements of the Lyman-α forest power spectrum at redshift z ≥ 4",
+          "authors": [
+            {
+              "name": "Ma K.",
+              "me": false
+            },
+            {
+              "name": "Bolton J. S.",
+              "me": false
+            },
+            {
+              "name": "Iršič V.",
+              "me": false
+            },
+            {
+              "name": "Gaikwad P.",
+              "me": false
+            },
+            {
+              "name": "Pieri M. M.",
+              "me": false
+            }
+          ],
+          "et_al": true,
+          "me_hidden": true,
+          "year": "2026",
+          "venue": "MNRAS",
+          "ref": "",
+          "status": "",
+          "doi": "10.1093/mnras/stag2028",
+          "arxiv": "2608.13153",
+          "ads": null,
+          "abstract": "We present the first detailed forecasts for the detectability of patchy hydrogen reionization in the one-dimensional Lyα forest power spectrum to be measured by the WEAVE-QSO survey. Using the Sherwood-relics reionization simulations and a WEAVE-QSO survey configuration, we generate mock spectra in four redshift bins, z=4.0,4.2,4.4, and 4.6, in which relic ionization and temperature fluctuations from patchy hydrogen reionization enhance the Lyα forest power spectrum on large scales (i.e., at wavenumber k∼ 10<sup>-3</sup>,s km<sup>-1</sup>). Our Lyα forest pipeline forecasts the power spectrum covariance by considering sample size, spectral resolution, noise subtraction, continuum placement, metal contamination, and damping wings from high-column density absorbers. Applying our covariance forecast within a Bayesian parameter inference framework, we find that the signature of patchy hydrogen reionization should be detectable at a significance of ≃ 4.5σ. The forthcoming WEAVE-QSO 1D power spectrum measurements should therefore be able to directly detect and characterize the large-scale relic imprint of patchy hydrogen reionization in the Lyα forest power spectrum at z≥ 4."
+        },
         {
           "title": "From simulations to observations. Methodology and data release of mock TNG50 galaxies at 0.3 &lt; z &lt; 0.7 for WEAVE-StePS",
           "authors": [
@@ -147,7 +220,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202555132",
           "arxiv": "2506.18997",
-          "ads": null
+          "ads": null,
+          "abstract": "The new generation of optical spectrographs (i.e., WEAVE, 4MOST, DESI, and WST) offer unprecedented opportunities for statistically studying the star formation histories of galaxies. However, these observations are not easily comparable to predictions from cosmological simulations. Our goal is to build a reference framework for comparing spectroscopic observations with simulations and test tools for deriving stellar population properties of galaxies. We focus on the observational strategy of the Stellar Population at Intermediate Redshift Survey (StePS) with the WEAVE instrument. We generate mock datasets of ∼750 galaxies at redshifts z = 0.3, 0.5, and 0.7 using the TNG50 simulation, perform radiative transfer with SKIRT, and analyze the spectra with pPXF as if they were real observations. We present the methodology to generate these datasets and provide an initial exploration of stellar population parameters (i.e., mass-weighted ages and metallicities) and star formation histories for three galaxies at z = 0.7 and their descendants at z = 0.5 and 0.3. We find good agreement between the mock spectra and intrinsic ages in TNG50 (average difference 0.2±0.3 Gyr) and successfully recover their star formation histories, especially for galaxies form the bulk of their stars on short timescales and at early epochs. We release these datasets, including multi-wavelength imaging and spectra, to support forthcoming WEAVE observations."
         },
         {
           "title": "Attenuation proxy hidden in surface brightness-colour diagrams. A new strategy for the LSST era",
@@ -181,7 +255,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202348432",
           "arxiv": "2401.12831",
-          "ads": null
+          "ads": null,
+          "abstract": "Large future sky surveys, such as the LSST, will provide optical photometry for billions of objects. This paper aims to construct a proxy for the far ultraviolet attenuation (AFUVp) from the optical data alone, enabling the rapid estimation of the star formation rate (SFR) for galaxies that lack UV or IR data. To mimic LSST observations, we use the deep panchromatic optical coverage of the SDSS Photometric Catalogue DR∼12, complemented by the estimated physical properties for the SDSS galaxies from the GALEX-SDSS-WISE Legacy Catalog (GSWLC) and inclination information obtained from the SDSS DR7. We restricted our sample to the 0.025-0.1 z-spec range and investigated relations among surface brightness, colours, and dust attenuation in the far UV range for star-forming galaxies obtained from the spectral energy distribution (SED). Dust attenuation is best correlated with (u-r) colour and the surface brightness in the u band (μ<sub>u</sub>). We provide a dust attenuation proxy for galaxies on the star-forming main sequence, which can be used for the LSST or any other type of broadband optical survey. The mean ratio between the catalogue values of SFR and those estimated using optical-only SDSS data with the AFUVp prior calculated as ΔSFR=log(SFR<sub>this work</sub>/SFR<sub>GSWLC</sub>) is found to be less than 0.1 dex, while runs without priors result in an SFR overestimation larger than 0.3 dex. The presence or absence of theAFUVp has a negligible influence on the stellar mass estimation (with ΔM<sub>star</sub> in the range from 0 to -0.15 dex). Forthcoming deep optical observations of the LSST Deep Drilling Fields, which also have multi-wavelength data, will enable one to calibrate the obtained relation for higher redshift galaxies and, possibly, extend the study towards other types of galaxies, such as early-type galaxies off the main sequence."
         },
         {
           "title": "Influence of star-forming galaxy selection on the galaxy main sequence",
@@ -215,7 +290,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202346396",
           "arxiv": "2308.16605",
-          "ads": null
+          "ads": null,
+          "abstract": "This work aims to determine how the galaxy main sequence (MS) changes using seven different commonly used methods to select the star-forming galaxies within VIPERS data over 0.5 ≤ z &lt; 1.2. The form and redshift evolution of the MS will then be compared between selection methods. The star-forming galaxies were selected using widely known methods: a specific star-formation rate (sSFR), Baldwin, Phillips and Terlevich (BPT) diagram, 4000Å spectral break (D4000) cut and four colour-colour cuts: NUVrJ, NUVrK, u-r, and UVJ. The main sequences were then fitted for each of the seven selection methods using a Markov chain Monte Carlo forward modelling routine, fitting both a linear main sequence and a MS with a high-mass turn-over to the star-forming galaxies. This was done in four redshift bins of 0.50 ≤ z &lt; 0.62, 0.62 ≤ z &lt; 0.72, 0.72 ≤ z &lt; 0.85, and 0.85 ≤ z &lt; 1.20. The slopes of all star-forming samples were found to either remain constant or increase with redshift, and the scatters were approximately constant. There is no clear redshift dependency of the presence of a high-mass turn-over for the majority of samples, with the NUVrJ and NUVrK being the only samples with turn-overs only at low redshift. No samples have turn-overs at all redshifts. Star-forming galaxies selected with sSFR and u-r are the only samples to have no high-mass turn-over in all redshift bins. The normalisation of the MS increases with redshift, as expected. The scatter around the MS is lower than the ≈0.3 dex typically seen in MS studies for all seven samples. The lack, or presence, of a high-mass turn-over is at least partially a result of the method used to select star-forming galaxies. However, whether a turn-over should be present or not is unclear."
         },
         {
           "title": "Decoding the IRX-β dust attenuation relation in star-forming galaxies at intermediate redshift",
@@ -249,7 +325,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202346976",
           "arxiv": "2309.01819",
-          "ads": null
+          "ads": null,
+          "abstract": "We aim to understand what drives the IRX-βdust attenuation relation at intermediate redshift (0.5 &lt; z &lt; 0.8) in star-forming galaxies. We investigate the role of various galaxy properties in shaping this observed relation. We use robust [O ii] λ3727, [O iii] λλ4959, 5007, and Hβline detections of our statistical sample of 1049 galaxies to estimate the gas-phase metallicities. We derive key physical properties that are necessary to study galaxy evolution, such as the stellar masses and the star formation rates, using the spectral energy distribution fitting tool CIGALE. Equivalently, we study the effect of galaxy morphology (mainly the Sérsic index n and galaxy inclination) on the observed IRX-βscatter. We also investigate the role of the environment in shaping dust attenuation in our sample. We find a strong correlation of the IRX-βrelation on gas-phase metallicity in our sample, and also strong correlation with galaxy compactness characterized by the Sérsic indexes. Correlations are also seen with stellar masses, specific star formation rates and the stellar ages of our sources. Metallicity strongly correlates with the IRX-βscatter, this also results from the older stars and higher masses at higher beta values. Galaxies with higher metallicities show higher IRX and higher beta values. The correlation with specific dust mass strongly shifts the galaxies away from the IRX-βrelation towards lower beta values. We find that more compact galaxies witness a larger amount of attenuation than less compact galaxies. There is a subtle variation in the dust attenuation scatter between edge-on and face-on galaxies, but the difference is not statistically significant. Galaxy environments do not significantly affect dust attenuation in our sample of star-forming galaxies at intermediate redshift."
         },
         {
           "title": "X-ray luminosity-star formation rate scaling relation: Constraints from the eROSITA Final Equatorial Depth Survey (eFEDS)",
@@ -283,7 +360,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202346857",
           "arxiv": "2309.03578",
-          "ads": null
+          "ads": null,
+          "abstract": "We present measurements of the relation between X-ray luminosity and star formation activity for a sample of normal galaxies spanning the redshift range between 0 and 0.25. We use data acquired by SRG/eROSITA for the performance and verification phase program called eROSITA Final Equatorial Depth Survey (eFEDS). The eFEDS galaxies are observed in the 0.2-2.3 keV band. Making use of a wide range of ancillary data, spanning from the ultraviolet (UV) to mid-infrared wavelengths (MIR), we estimated the star formation rate (SFR) and stellar mass (M<sub>star</sub>) of 888 galaxies, using Code Investigating GALaxy Emission (CIGALE). We divided our sample of normal galaxies in star-forming (SFGs) and quiescent galaxies according to their position on the main sequence. We confirm a linear correlation between the X-ray luminosity and the SFR for our sample of SFGs, as shown previously in the literature. However, we find this relation to be strongly biased by the completeness limit of the eFEDS survey. Correcting for completeness, we find the fitted relation to be consistent with the literature. We also investigated the relation between X-ray emission from both LMXBs and HMXBs populations with M<sub>star</sub> and SFR, respectively. Correcting for completeness, we find our fitted relation to considerably scatter from the literature relation at high specific SFR (SFR/M<sub>star</sub>). We conclude that without accounting for X-ray non-detections, it is not possible to employ eFEDS data to study the redshift evolution of the LMXBs and HMXBs contributions due to completeness issues. Furthermore, we find our sources to largely scatter from the expected Lx/SFR vs specific SFR relation at high redshift. We discuss the dependence of the scatter on the stellar mass, metallicity, or the globular cluster content of the galaxy."
         },
         {
           "title": "SFR estimations from z = 0 to z = 0.9. A comparison of SFR calibrators for star-forming galaxies",
@@ -317,7 +395,8 @@
           "status": "",
           "doi": "10.1051/0004-6361/202141701",
           "arxiv": "2209.04390",
-          "ads": null
+          "ads": null,
+          "abstract": "Using VIPERS, we estimated a set of SFR based on photometric and spectroscopic data. We used, as estimators, photometric bands from ultraviolet to mid-infrared, and spectral lines. Assuming a reference SFR obtained from the spectral energy distribution reconstructed with Code Investigating GALaxy Emission, we estimated the reliability of each band as an SFR tracer. We used GSWLC to trace the dependence of these SFR calibrators with redshift. The far and near UV, u-band and 24-μm bands, as well as L<sub>TIR</sub>, are found to be good SFR tracers up to z∼0.9 with a strong dependence on the attenuation prescription used for the bluest bands (scatter of SFR of 0.26, 0.14, 0.15, 0.23, and 0.24dex for VIPERS, and 0.25, 0.24, 0.09, 0.12, and 0.12dex for GSWLC). The 8-μm band provides only a rough estimate of the SFR as it depends on metallicity and polycyclic aromatic hydrocarbon properties (scatter of 0.23dex for VIPERS). We estimated the scatter of rest-frame luminosity estimations from CIGALE to be 0.26, 0.14, 0.12, 0.15, and 0.20dex for FUV, NUV, ugriz, K<sub>s</sub>, and 8-24μm-L<sub>TIR</sub>). At intermediate redshift, the Hβ line is a reliable SFR tracer (scatter of 0.19dex) and the [OII] line gives an equally good estimation when the metallicity from the R<sub>23</sub> parameter is taken into account (0.17 for VIPERS and 0.20dex for GSWLC). A calibration based on [OIII] retrieves the SFR only when additional information such as the metallicity or the ionization parameter of galaxies are used (0.26 for VIPERS and 0.20dex for GSWLC), diminishing its usability as a direct SFR tracer. Based on rest-frame luminosities estimated with CIGALE, we propose our own set of calibrations from FUV, NUV, u-band, 8, 24μm, L<sub>TIR</sub>, Hβ, [OII], and [OIII]."
         }
       ]
     },
@@ -325,40 +404,6 @@
       "key": "preprints",
       "title": "Accepted and submitted",
       "items": [
-        {
-          "title": "Detection of metal absorption lines in quasar spectra: a neural network approach using U-Net",
-          "authors": [
-            {
-              "name": "Mangola E. S.",
-              "me": false
-            },
-            {
-              "name": "Pistis F.",
-              "me": true
-            },
-            {
-              "name": "Fumagalli M.",
-              "me": false
-            },
-            {
-              "name": "Fossati M.",
-              "me": false
-            },
-            {
-              "name": "Berg T.",
-              "me": false
-            }
-          ],
-          "et_al": true,
-          "me_hidden": false,
-          "year": "2026",
-          "venue": "",
-          "ref": "",
-          "status": "Accepted",
-          "doi": null,
-          "arxiv": "2609.28072",
-          "ads": null
-        },
         {
           "title": "Extending the Little Red Dot population at intermediate redshift with VIPERS",
           "authors": [
@@ -391,7 +436,8 @@
           "status": "Submitted",
           "doi": null,
           "arxiv": "2609.10319",
-          "ads": null
+          "ads": null,
+          "abstract": "Little red dots (LRDs) are a recently identified population of compact, red sources characterised by a distinctive V-shaped UV-to-optical continuum and broad emission lines. Their physical structure and evolution remain uncertain, while their properties at intermediate redshifts are largely unexplored. We identify and characterise LRD-like sources at 0.50.5, bridging local and high-redshift studies. Their abundance, compact morphology, environmental properties, and multi-wavelength emission provide new constraints on the evolution and physical origin of this population."
         },
         {
           "title": "PILOT: Physically-Informed Line identificatiOn Tool. A physically motivated classifier for metal lines in quasar spectra",
@@ -425,41 +471,8 @@
           "status": "Submitted",
           "doi": null,
           "arxiv": null,
-          "ads": null
-        },
-        {
-          "title": "Forecast for the detectability of patchy hydrogen reionization in WEAVE-QSO measurements of the Lyman-α forest power spectrum at redshift z ≥ 4",
-          "authors": [
-            {
-              "name": "Ma K.",
-              "me": false
-            },
-            {
-              "name": "Bolton J. S.",
-              "me": false
-            },
-            {
-              "name": "Iršič V.",
-              "me": false
-            },
-            {
-              "name": "Gaikwad P.",
-              "me": false
-            },
-            {
-              "name": "Pieri M. M.",
-              "me": false
-            }
-          ],
-          "et_al": true,
-          "me_hidden": true,
-          "year": "2026",
-          "venue": "",
-          "ref": "",
-          "status": "Accepted",
-          "doi": "10.1093/mnras/stag2028",
-          "arxiv": "2608.13153",
-          "ads": null
+          "ads": null,
+          "abstract": null
         }
       ]
     },
@@ -483,7 +496,8 @@
           "status": "",
           "doi": null,
           "arxiv": null,
-          "ads": null
+          "ads": null,
+          "abstract": null
         },
         {
           "title": "Energy Balance in Star-Forming Galaxies at Intermediate Redshift",
@@ -517,7 +531,8 @@
           "status": "",
           "doi": null,
           "arxiv": null,
-          "ads": null
+          "ads": null,
+          "abstract": null
         },
         {
           "title": "A Comparison of SFR Calibrators for Star-Forming Galaxies from z = 0 to z = 0.9",
@@ -551,7 +566,8 @@
           "status": "",
           "doi": null,
           "arxiv": null,
-          "ads": null
+          "ads": null,
+          "abstract": null
         },
         {
           "title": "The fundamental metallicity relation from z∼0 to z∼0.7: Selection or Evolution?",
@@ -585,9 +601,117 @@
           "status": "",
           "doi": null,
           "arxiv": null,
-          "ads": null
+          "ads": null,
+          "abstract": null
         }
       ]
+    }
+  ],
+  "latest": [
+    {
+      "title": "Detection of metal absorption lines in quasar spectra: a neural network approach using U-Net",
+      "authors": [
+        {
+          "name": "Mangola E. S.",
+          "me": false
+        },
+        {
+          "name": "Pistis F.",
+          "me": true
+        },
+        {
+          "name": "Fumagalli M.",
+          "me": false
+        },
+        {
+          "name": "Fossati M.",
+          "me": false
+        },
+        {
+          "name": "Berg T.",
+          "me": false
+        }
+      ],
+      "et_al": true,
+      "me_hidden": false,
+      "year": "2026",
+      "venue": "A&A",
+      "ref": "715, A101",
+      "status": "",
+      "doi": "10.1051/0004-6361/202660827",
+      "arxiv": "2609.28072",
+      "ads": null,
+      "abstract": "Current and future large spectroscopic surveys are significantly enhancing the volume and resolution of quasar spectra that are observed, which requires the creation of efficient and precise automated techniques to detect absorption features. This study focuses on the detection of metal absorption features using a novel U-Net model on WEAVE-like mock spectra in the quasar rest-frame wavelength interval 1230 Å ≤ λ<sub>RF</sub> ≤ 3095 Å. We test the network performance for absorption detection both on ideal data and after simulating the continuum fitting step as applied on real data. The performance of these architectures is evaluated by the completeness, purity, and F1 score reached in bins of signal-to-noise (S/ N<sub>line</sub> ) for the absorption lines and with the absolute fractional flux error for the continuum. The ability to recover the correct line centers is also studied. The U-Net reaches scores of ≈ 90% for all metrics (completeness, purity, and F1 score) at S/ N<sub>line</sub> ≈ 4. All false positive detections with S/ N<sub>line</sub> ≥ 5 fall in the tails of the broad Lyα absorbers distribution of damped Lyα systems. The combination of continuum fitting and line detections has negligible effects on the detection performance at S/ N<sub>line</sub> ≥ 4. Our proposed U-Net architecture offers a competitive tool for the analysis of absorption lines in current and upcoming large spectroscopic surveys and is well-suited to the identification of any absorption line feature."
+    },
+    {
+      "title": "Extending the Little Red Dot population at intermediate redshift with VIPERS",
+      "authors": [
+        {
+          "name": "Lisiecki K.",
+          "me": false
+        },
+        {
+          "name": "Hryniewicz K.",
+          "me": false
+        },
+        {
+          "name": "Pistis F.",
+          "me": true
+        },
+        {
+          "name": "Michałowski M. J.",
+          "me": false
+        },
+        {
+          "name": "Cotter A. P.",
+          "me": false
+        }
+      ],
+      "et_al": true,
+      "me_hidden": false,
+      "year": "2026",
+      "venue": "",
+      "ref": "",
+      "status": "Submitted",
+      "doi": null,
+      "arxiv": "2609.10319",
+      "ads": null,
+      "abstract": "Little red dots (LRDs) are a recently identified population of compact, red sources characterised by a distinctive V-shaped UV-to-optical continuum and broad emission lines. Their physical structure and evolution remain uncertain, while their properties at intermediate redshifts are largely unexplored. We identify and characterise LRD-like sources at 0.50.5, bridging local and high-redshift studies. Their abundance, compact morphology, environmental properties, and multi-wavelength emission provide new constraints on the evolution and physical origin of this population."
+    },
+    {
+      "title": "Forecast for the detectability of patchy hydrogen reionization in WEAVE-QSO measurements of the Lyman-α forest power spectrum at redshift z ≥ 4",
+      "authors": [
+        {
+          "name": "Ma K.",
+          "me": false
+        },
+        {
+          "name": "Bolton J. S.",
+          "me": false
+        },
+        {
+          "name": "Iršič V.",
+          "me": false
+        },
+        {
+          "name": "Gaikwad P.",
+          "me": false
+        },
+        {
+          "name": "Pieri M. M.",
+          "me": false
+        }
+      ],
+      "et_al": true,
+      "me_hidden": true,
+      "year": "2026",
+      "venue": "MNRAS",
+      "ref": "",
+      "status": "",
+      "doi": "10.1093/mnras/stag2028",
+      "arxiv": "2608.13153",
+      "ads": null,
+      "abstract": "We present the first detailed forecasts for the detectability of patchy hydrogen reionization in the one-dimensional Lyα forest power spectrum to be measured by the WEAVE-QSO survey. Using the Sherwood-relics reionization simulations and a WEAVE-QSO survey configuration, we generate mock spectra in four redshift bins, z=4.0,4.2,4.4, and 4.6, in which relic ionization and temperature fluctuations from patchy hydrogen reionization enhance the Lyα forest power spectrum on large scales (i.e., at wavenumber k∼ 10<sup>-3</sup>,s km<sup>-1</sup>). Our Lyα forest pipeline forecasts the power spectrum covariance by considering sample size, spectral resolution, noise subtraction, continuum placement, metal contamination, and damping wings from high-column density absorbers. Applying our covariance forecast within a Bayesian parameter inference framework, we find that the signature of patchy hydrogen reionization should be detectable at a significance of ≃ 4.5σ. The forthcoming WEAVE-QSO 1D power spectrum measurements should therefore be able to directly detect and characterize the large-scale relic imprint of patchy hydrogen reionization in the Lyα forest power spectrum at z≥ 4."
     }
   ]
 }

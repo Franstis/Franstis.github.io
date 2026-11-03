@@ -1,0 +1,81 @@
+# Talks and posters, most recent first. type: Oral, Poster or ePoster.
+
+- date: "09/2026"
+  type: Oral
+  event: "3rd Int. Workshop on ML & Quantum Computing Applications in Medicine and Physics"
+  title: "The AI spectroscopist: unveiling galaxy and IGM physics in the era of million-spectrum surveys"
+
+- date: "06–07/2026"
+  type: Oral
+  event: "EAS Annual Meeting 2026"
+  title: "When Quasars talk, AI listens: fully automated ML pipelines"
+
+- date: "09/2025"
+  type: Poster
+  event: "42. Zjazd Polskiego Towarzystwa Astronomicznego"
+  title: "Next-generation computing and data technologies to probe the cosmic metal content"
+
+- date: "06/2025"
+  type: Oral
+  event: "UniversAI: Exploring the Universe with Artificial Intelligence"
+  title: "Neural Networks for Spectral Analysis: Continuum Reconstruction and Metal Absorber Identification in Quasar Observations"
+
+- date: "09/2024"
+  type: Oral
+  event: "Physics in the AI era"
+  title: "Neural Network approaches for Quasar and Galaxy continuum estimation: a comparative study of Autoencoder and U-Net architectures"
+
+- date: "06/2024"
+  type: Oral
+  event: "2nd Int. Workshop on ML & Quantum Computing Applications in Medicine and Physics"
+  title: "Using Machine Learning to Identify Outliers in the Fundamental Metallicity Relation"
+
+- date: "10/2022"
+  type: Poster
+  event: "Rubin Observatory LSST@Europe4"
+  title: "A machine learning expansion to the \"photometric\" Fundamental Metallicity Relation"
+
+- date: "09/2022"
+  type: Oral
+  event: "Second Roman Juszkiewicz Symposium"
+  title: "Reviewing the Fundamental Metallicity Relation up to intermediate redshift: analyzing different approaches of comparison"
+
+- date: "07/2022"
+  type: Oral
+  event: "From galaxies to cosmology with deep spectroscopic surveys"
+  title: "The Fundamental Metallicity Relation up to z ∼ 0.7: Investigating different methods of comparison of different samples"
+
+- date: "07/2022"
+  type: Oral
+  event: "5th Cosmology School, Jagiellonian University, Cracow"
+  title: "Reviewing the FMR up to z ∼ 0.7: analyzing different approaches of comparison"
+
+- date: "06–07/2022"
+  type: ePoster
+  event: "EAS Annual Meeting 2022"
+  title: "Revisiting the Fundamental Metallicity Relation at intermediate redshift"
+
+- date: "09/2021"
+  type: Oral
+  event: "40. Zjazd Polskiego Towarzystwa Astronomicznego"
+  title: "The Fundamental Metallicity Relation from SDSS (z ∼ 0) to VIPERS (z ∼ 0.7): selection or evolution?"
+
+- date: "06–07/2021"
+  type: ePoster
+  event: "EAS Annual Meeting 2021"
+  title: "The Fundamental Metallicity Relation from SDSS (z ∼ 0) to VIPERS (z ∼ 0.7): selection or evolution?"
+
+- date: "11/2020"
+  type: Oral
+  event: "NEP Conference 2020"
+  title: "The Fundamental Metallicity Relation at high redshift: the extension with photometric data"
+
+- date: "11/2020"
+  type: Poster
+  event: "ADASS: Astronomy meets Granada… online"
+  title: "VIPERS: Fundamental Metallicity Relation and its projections. How observational bias affects their shape"
+
+- date: "10/2020"
+  type: Oral
+  event: "The Rise of Metal and Dust"
+  title: "VIPERS: Fundamental Metallicity Relation and its projections. Can observational bias affect their shape?"

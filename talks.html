@@ -1,0 +1,41 @@
+---
+layout: default
+title: Talks
+heading: Talks & conferences
+permalink: /talks/
+body_class: talks
+---
+{% assign talks = site.data.talks %}
+{% assign orals = 0 %}{% assign posters = 0 %}
+{% for t in talks %}{% if t.type contains "oster" %}{% assign posters = posters | plus: 1 %}{% else %}{% assign orals = orals | plus: 1 %}{% endif %}{% endfor %}
+<p class="lead">Selected contributed talks and posters, most recent first.</p>
+
+<div class="filter-bar" data-scope="#talks" data-js hidden>
+  <div class="chips" role="group" aria-label="Show">
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">All<span>{{ talks.size }}</span></button>
+    <button type="button" class="chip" data-filter="oral" aria-pressed="false">Talks<span>{{ orals }}</span></button>
+    <button type="button" class="chip" data-filter="poster" aria-pressed="false">Posters<span>{{ posters }}</span></button>
+  </div>
+  <p class="filter-count" data-filter-count aria-live="polite"></p>
+</div>
+
+<div id="talks">
+{% assign last_year = "" %}
+{% for t in talks %}
+  {% assign year = t.date | split: "/" | last %}
+  {% assign kind = "oral" %}{% if t.type contains "oster" %}{% assign kind = "poster" %}{% endif %}
+  {% if year != last_year %}
+    {% unless forloop.first %}</ol></section>{% endunless %}
+<section data-filter-section>
+<h2 class="timeline-year">{{ year }}</h2>
+<ol class="timeline">
+    {% assign last_year = year %}
+  {% endif %}
+  <li class="timeline-item" data-filter-item data-group="{{ kind }}">
+    <span class="timeline-date">{{ t.date }}</span>
+    <p class="timeline-event">{{ t.event | escape }} <span class="tag{% if kind == 'poster' %} tag-poster{% endif %}">{{ t.type }}</span></p>
+    <p class="timeline-title">{{ t.title | escape }}</p>
+  </li>
+  {% if forloop.last %}</ol></section>{% endif %}
+{% endfor %}
+</div>

@@ -4,21 +4,23 @@ Personal academic website of Francesco Pistis, built with Jekyll and hosted on G
 
 ## Editing
 
-Each page is a Markdown file:
+Each page is a Markdown or HTML file:
 
 | File | Page |
 |---|---|
-| `index.md` | Home |
+| `index.html` | Home (figures and latest papers are filled in from the data files) |
 | `research.html` | Research → Publications (from `_data/publications.json`) |
 | `research-data.html` | Research → Data |
 | `research-codes.html` | Research → Codes (from `_data/codes.yml`) |
-| `talks.md` | Talks and conferences |
+| `talks.html` | Talks and conferences (from `_data/talks.yml`) |
 | `cv.md` | CV |
-| `contact.md` | Contact |
+| `contact.html` | Contact |
 
 - Site title, description, the top menu, the Research tabs and the banner image are in `_config.yml`.
   The banner image file goes in `assets/img/banner.jpg`.
-- The page template is `_layouts/default.html`; styles are in `assets/css/style.css`.
+- The page template is `_layouts/default.html`; styles are in `assets/css/style.css`;
+  search, filters, copy buttons, the light/dark switch and animations are in `assets/js/site.js`.
+- To add a talk, add an entry at the top of `_data/talks.yml`.
 
 ## Publication list
 

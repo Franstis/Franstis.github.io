@@ -7,6 +7,7 @@ subnav: research
 body_class: research
 ---
 {% assign pubs = site.data.publications %}
+{% assign total = 0 %}{% for g in pubs.groups %}{% assign total = total | plus: g.items.size %}{% endfor %}
 <p class="pub-source">
   {% if pubs.source == "ads" %}Updated automatically from
   <a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a>
@@ -16,15 +17,39 @@ body_class: research
   <a href="https://www.scopus.com/authid/detail.uri?authorId={{ site.author.scopus }}">Scopus</a>.{% endif %}
 </p>
 
+<div class="filter-bar" data-scope="#pubs" data-js hidden>
+  <label class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <span class="visually-hidden">Search publications</span>
+    <input type="search" placeholder="Search titles, authors, abstracts…" autocomplete="off">
+    <kbd aria-hidden="true">/</kbd>
+  </label>
+  <div class="chips" role="group" aria-label="Show">
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">All<span>{{ total }}</span></button>
+    {% for g in pubs.groups %}{% if g.items.size > 0 %}{% case g.key %}{% when "first_author" %}{% assign label = "First author" %}{% when "coauthor" %}{% assign label = "Co-author" %}{% when "preprints" %}{% assign label = "Preprints" %}{% when "proceedings" %}{% assign label = "Proceedings" %}{% else %}{% assign label = g.title %}{% endcase %}
+    <button type="button" class="chip" data-filter="{{ g.key }}" aria-pressed="false">{{ label }}<span>{{ g.items.size }}</span></button>{% endif %}{% endfor %}
+  </div>
+  <p class="filter-count" data-filter-count aria-live="polite"></p>
+</div>
+
+<div id="pubs">
 {% for group in pubs.groups %}{% if group.items.size > 0 %}
+<section data-filter-section>
 <h2>{{ group.title }} <span class="count">{{ group.items.size }}</span></h2>
 <ol class="pub-list">
   {% for p in group.items %}
-  <li>
+  <li data-filter-item data-group="{{ group.key }}" data-year="{{ p.year }}"{% if p.arxiv %} data-arxiv="{{ p.arxiv }}"{% endif %}>
     <span class="pub-title">{{ p.title }}</span>
     <span class="pub-authors">{% for a in p.authors %}{% if a.me %}<strong>{{ a.name }}</strong>{% else %}{{ a.name }}{% endif %}{% unless forloop.last %}, {% endunless %}{% endfor %}{% if p.et_al %}, et al.{% endif %}{% if p.me_hidden %} (incl. <strong>{{ pubs.me_name }}</strong>){% endif %}</span>
-    <span class="pub-meta">{% if p.venue != "" %}<em>{{ p.venue }}</em>{% if p.ref != "" %} {{ p.ref }}{% endif %} {% endif %}({{ p.year }}){% if p.status != "" %} <span class="tag">{{ p.status }}</span>{% endif %}{% if p.doi %} · <a href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}{% if p.arxiv %} · <a href="https://arxiv.org/abs/{{ p.arxiv }}">arXiv:{{ p.arxiv }}</a>{% endif %}{% if p.ads %} · <a href="{{ p.ads }}">SciX</a>{% endif %}</span>
+    <span class="pub-meta">{% if p.venue != "" %}<span class="pub-venue"><em>{{ p.venue }}</em>{% if p.ref != "" %} {{ p.ref }}{% endif %}</span> {% endif %}({{ p.year }}){% if p.status != "" %} <span class="tag">{{ p.status }}</span>{% endif %}{% if p.doi %} · <a href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}{% if p.arxiv %} · <a href="https://arxiv.org/abs/{{ p.arxiv }}">arXiv:{{ p.arxiv }}</a>{% endif %}{% if p.ads %} · <a href="{{ p.ads }}">SciX</a>{% endif %}</span>
+    <div class="pub-actions">
+      <button type="button" class="button-small pub-cite" data-js hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>Copy citation</button>
+      {% if p.abstract %}<details class="pub-abstract"><summary class="button-small"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Abstract</summary><p>{{ p.abstract }}</p></details>{% endif %}
+    </div>
   </li>
   {% endfor %}
 </ol>
+</section>
 {% endif %}{% endfor %}
+<p class="filter-empty" data-filter-empty hidden>No papers match your search. <button type="button" class="button-small" data-filter-reset>Show all papers</button></p>
+</div>
