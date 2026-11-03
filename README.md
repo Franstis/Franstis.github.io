@@ -32,7 +32,22 @@ accepted/submitted preprints and conference proceedings.
 
 Above the list, two charts show papers per year (counted from the list) and
 citations per year (from the SciX metrics API, for the papers in the list).
-The citations chart only appears when the list comes from SciX.
+The citations chart, the h-index and the "Copy BibTeX" buttons only appear
+when the list comes from SciX.
+
+## Search engines and sharing
+
+- Each page has a `description:` line in its front matter; Google shows it under
+  the page title in search results.
+- The home page carries profile data for Google (name, job, affiliations,
+  ORCID, Scopus, GitHub), taken from `author:` in `_config.yml`.
+- `assets/img/share.jpg` (1200×630) is the picture shown when a link to the site
+  is shared. To verify the site in Google Search Console, choose the "HTML tag"
+  method and paste its code into `google_site_verification` in `_config.yml`.
+- The banner comes in two files: `banner.webp` (used by almost all browsers) and
+  `banner.jpg`. To change the picture, replace both, keeping them to about
+  2560 pixels wide.
+- `404.html` is the page shown for addresses that do not exist.
 
 - The query, papers to leave out and other settings are at the top of the script.
 - SciX finds papers by ORCID only once they are claimed in SciX

@@ -27,6 +27,7 @@ actions:
 <ul class="stats">
   <li class="stat"><a href="{{ '/research/' | relative_url }}"><span class="stat-value" data-count="{{ refereed }}">{{ refereed }}</span><span class="stat-label">refereed papers</span></a></li>
   <li class="stat"><a href="{{ '/research/' | relative_url }}?filter=first_author"><span class="stat-value" data-count="{{ first.items.size }}">{{ first.items.size }}</span><span class="stat-label">as first author</span></a></li>
+  {% if site.data.publications.h_index %}<li class="stat"><a href="{{ '/research/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.publications.h_index }}">{{ site.data.publications.h_index }}</span><span class="stat-label">h-index (SciX)</span></a></li>{% endif %}
   <li class="stat"><a href="{{ '/talks/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.talks.size }}">{{ site.data.talks.size }}</span><span class="stat-label">talks &amp; posters</span></a></li>
   <li class="stat"><a href="{{ '/research/codes/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.codes.size }}">{{ site.data.codes.size }}</span><span class="stat-label">public codes</span></a></li>
 </ul>

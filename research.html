@@ -4,6 +4,7 @@ title: Publications
 heading: Research
 permalink: /research/
 subnav: research
+description: "Publications by Francesco Pistis on galaxy evolution, quasar spectroscopy and machine learning, with papers and citations per year."
 body_class: research
 ---
 {% assign pubs = site.data.publications %}
@@ -43,7 +44,7 @@ body_class: research
   <figure class="chart">
     <figcaption>
       <span class="chart-title">Citations per year</span>
-      <span class="chart-note">{{ charts.citations.total }} in total, counted by SciX</span>
+      <span class="chart-note">{{ charts.citations.total }} in total{% if pubs.h_index %}, h-index {{ pubs.h_index }}{% endif %}, counted by SciX</span>
     </figcaption>
     <div class="chart-plot">
       <div class="chart-grid" aria-hidden="true">{% for t in charts.citations.ticks %}<span style="bottom: {{ t.pct }}%" data-v="{{ t.value }}"></span>{% endfor %}</div>
@@ -87,6 +88,7 @@ body_class: research
     <span class="pub-meta">{% if p.venue != "" %}<span class="pub-venue"><em>{{ p.venue }}</em>{% if p.ref != "" %} {{ p.ref }}{% endif %}</span> {% endif %}({{ p.year }}){% if p.status != "" %} <span class="tag">{{ p.status }}</span>{% endif %}{% if p.doi %} · <a href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}{% if p.arxiv %} · <a href="https://arxiv.org/abs/{{ p.arxiv }}">arXiv:{{ p.arxiv }}</a>{% endif %}{% if p.ads %} · <a href="{{ p.ads }}">SciX</a>{% endif %}</span>
     <div class="pub-actions">
       <button type="button" class="button-small pub-cite" data-js hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>Copy citation</button>
+      {% if p.bibtex %}<button type="button" class="button-small" data-copy="{{ p.bibtex | escape }}" data-copy-message="BibTeX copied" data-js hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H6a2 2 0 0 0-2 2v3l-2 2 2 2v3a2 2 0 0 0 2 2h2M16 5h2a2 2 0 0 1 2 2v3l2 2-2 2v3a2 2 0 0 1-2 2h-2"/></svg>Copy BibTeX</button>{% endif %}
       {% if p.abstract %}<details class="pub-abstract"><summary class="button-small"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Abstract</summary><p>{{ p.abstract }}</p></details>{% endif %}
     </div>
   </li>

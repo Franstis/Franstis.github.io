@@ -9,8 +9,9 @@ SciX can take a few weeks to add the journal version of a preprint, so
 preprints are also checked on arXiv (for "accepted"/"submitted" comments) and
 on Crossref (for a journal version with the same title and first author).
 
-The Publications tab also shows papers per year (from this list) and
-citations per year (from the SciX metrics API).
+The Publications tab also shows papers per year (from this list), citations
+per year and the h-index (from the SciX metrics API), and offers each paper's
+BibTeX entry (from the SciX export API).
 
 Needs a SciX API token in the ADS_TOKEN environment variable
 (scixplorer.org → Account → Settings → API Token; an ADS token works too). Without one, the existing data file
@@ -55,6 +56,7 @@ MAX_AUTHORS = 5
 # SciX is served by the NASA ADS API
 ADS_URL = "https://api.adsabs.harvard.edu/v1/search/query"
 METRICS_URL = "https://api.adsabs.harvard.edu/v1/metrics"
+EXPORT_URL = "https://api.adsabs.harvard.edu/v1/export/bibtex"
 ARXIV_URL = "https://export.arxiv.org/api/query"
 CROSSREF_URL = "https://api.crossref.org/works"
 USER_AGENT = "publication-list/1.0 (+https://franstis.github.io)"
@@ -106,21 +108,35 @@ def fetch_ads(token):
             return docs
 
 
-def fetch_citations(token, bibcodes):
-    """Year -> citations the listed papers received that year (all citing papers)."""
-    body = json.dumps({"bibcodes": bibcodes, "types": ["histograms"],
-                       "histograms": ["citations"]}).encode()
-    req = urllib.request.Request(METRICS_URL, data=body, headers={
+def post_ads(url, token, payload):
+    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
         "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=60) as resp:
-        histogram = json.load(resp)["histograms"]["citations"]
+        return json.load(resp)
+
+
+def fetch_metrics(token, bibcodes):
+    """Citations per year (year -> count) and the h-index of the listed papers."""
+    metrics = post_ads(METRICS_URL, token, {
+        "bibcodes": bibcodes, "types": ["histograms", "indicators"], "histograms": ["citations"]})
     # Split into refereed/non-refereed citing and cited papers; add them up
     years = {}
-    for kind, counts in histogram.items():
+    for kind, counts in metrics["histograms"]["citations"].items():
         if "normalized" not in kind:
             for year, n in counts.items():
                 years[int(year)] = years.get(int(year), 0) + int(n)
-    return years
+    return years, metrics["indicators"]["h"]
+
+
+def fetch_bibtex(token, bibcodes):
+    """Bibcode -> BibTeX entry, as SciX exports it."""
+    export = post_ads(EXPORT_URL, token, {"bibcode": bibcodes})["export"]
+    entries = {}
+    for item in re.split(r"\n(?=@)", export.strip()):
+        m = re.match(r"@\w+\{([^,]+),", item)
+        if m:
+            entries[m.group(1).strip()] = item.strip()
+    return entries
 
 
 def get(url, params, tries=3):
@@ -289,7 +305,7 @@ def group_of(doc):
     return None  # catalogues, software, theses, errata...
 
 
-def entry(doc, group):
+def entry(doc, group, bibtex):
     authors = doc.get("author") or []
     shown = authors[:MAX_AUTHORS]
     me_hidden = not any(is_me(a) for a in shown) and any(is_me(a) for a in authors)
@@ -309,6 +325,7 @@ def entry(doc, group):
         "arxiv": arxiv_id(doc),
         "ads": f"https://scixplorer.org/abs/{doc['bibcode']}/abstract" if doc.get("bibcode") else None,
         "abstract": clean_abstract(doc["abstract"]) if doc.get("abstract") else None,
+        "bibtex": bibtex.get(doc.get("bibcode")),
     }
 
 
@@ -367,7 +384,7 @@ def charts(grouped, citations):
     return out
 
 
-def build(docs, source, citations=None):
+def build(docs, source, citations=None, h_index=None, bibtex=None):
     grouped = {key: [] for key, _ in GROUPS}
     recent = []
     for doc in docs:
@@ -375,7 +392,7 @@ def build(docs, source, citations=None):
             continue
         group = group_of(doc)
         if group:
-            item = entry(doc, group)
+            item = entry(doc, group, bibtex or {})
             grouped[group].append(item)
             # Only papers people can open (skips proceedings and unpublished drafts)
             if group != "proceedings" and (item["doi"] or item["arxiv"]):
@@ -389,6 +406,7 @@ def build(docs, source, citations=None):
         "groups": [{"key": k, "title": t, "items": grouped[k]} for k, t in GROUPS],
         "latest": recent,
         "charts": charts(grouped, citations),
+        "h_index": h_index,
     }
 
 
@@ -408,15 +426,19 @@ def main():
         docs = fetch_ads(token)
 
     update_preprints(docs)
-    citations = None
+    citations = h_index = bibtex = None
     if not args.input:
         listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
                   and d["bibcode"] not in EXCLUDE_BIBCODES]
         try:
-            citations = fetch_citations(token, listed)
+            citations, h_index = fetch_metrics(token, listed)
         except Exception as err:
-            print(f"SciX metrics failed ({err}); the citations chart is left out.", file=sys.stderr)
-    data = build(docs, args.source, citations)
+            print(f"SciX metrics failed ({err}); citations and h-index are left out.", file=sys.stderr)
+        try:
+            bibtex = fetch_bibtex(token, listed)
+        except Exception as err:
+            print(f"SciX BibTeX export failed ({err}); the BibTeX buttons are left out.", file=sys.stderr)
+    data = build(docs, args.source, citations, h_index, bibtex)
     if not any(g["items"] for g in data["groups"]):
         print("SciX returned no publications; keeping the existing list.", file=sys.stderr)
         return 1

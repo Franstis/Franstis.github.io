@@ -423,7 +423,9 @@ li { margin: 0.35em 0; }
 /* Home: figures, research cards, latest papers --------------------------- */
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* One row, however many figures there are */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 12px;
   margin: 28px 0 8px;
   padding: 0;
@@ -847,7 +849,8 @@ thead { display: none; }
 
 /* Small screens --------------------------------------------------------- */
 @media (max-width: 640px) {
-  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .cards, .contact-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 520px) {

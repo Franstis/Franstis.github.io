@@ -7,6 +7,21 @@ author:
   name: Francesco Pistis
   orcid: 0000-0003-1189-2617
   scopus: 57747950400
+  github: Franstis
+  # Used for Google's profile data (see the <head> of _layouts/default.html)
+  job_title: Postdoctoral researcher in astrophysics
+  affiliations:
+    - name: National Centre for Nuclear Research (NCBJ)
+      url: https://www.ncbj.gov.pl/en
+    - name: INAF – Osservatorio Astronomico di Brera
+      url: https://www.brera.inaf.it
+  topics: [Galaxy evolution, Quasar spectroscopy, Metal absorption lines, Machine learning]
+
+# Picture shown when the site is shared (1200×630)
+share_image: /assets/img/share.jpg
+
+# Google Search Console: paste the code from its "HTML tag" option here
+google_site_verification: ""
 
 # Header image shown behind the page titles. Remove this line for a plain dark banner.
 banner: /assets/img/banner.jpg

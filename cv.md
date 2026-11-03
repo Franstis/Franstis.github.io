@@ -3,6 +3,7 @@ layout: default
 title: CV
 permalink: /cv/
 heading: Curriculum vitae
+description: "Curriculum vitae of Francesco Pistis, postdoctoral researcher in astrophysics at NCBJ Warsaw."
 body_class: cv
 ---
 
