@@ -239,6 +239,23 @@ def update_preprints(docs):
             doc["year"] = str(year)
 
 
+def title_key(doc):
+    """Title reduced to letters and digits, so versions of a paper compare equal."""
+    return letters(clean_text(html.unescape((doc.get("title") or [""])[0])))
+
+
+def drop_duplicates(docs):
+    """Leave out preprints SciX still lists next to their journal version."""
+    published = {title_key(d) for d in docs if group_of(d) in ("first_author", "coauthor")}
+    kept = []
+    for doc in docs:
+        if group_of(doc) == "preprints" and title_key(doc) in published:
+            print(f"Leaving out {doc.get('bibcode')}: the journal version is listed")
+            continue
+        kept.append(doc)
+    return kept
+
+
 def clean_text(raw):
     text = re.sub(r"<[^>]+>", "", raw)
     for cmd in sorted(LATEX, key=len, reverse=True):
@@ -455,7 +472,8 @@ def tex_text(text):
     text = re.sub(r"(?i)<sup>(.*?)</sup>", r"$^{\1}$", text)
     text = re.sub(r"<[^>]+>", "", text)
     parts = re.split(r"(\$[^$]*\$)", text)
-    return "".join(p if p.startswith("$") and len(p) > 1 else re.sub(r"(?<!\\)([&%#_])", r"\\\1", p)
+    return "".join(p if p.startswith("$") and len(p) > 1
+                   else re.sub(r"(?<!\\)([&%#_])", r"\\\1", p).replace("~", "$\\sim$")
                    for p in parts)
 
 
@@ -524,7 +542,7 @@ def extra_entries(path):
 def write_tex(docs, path):
     listed = [d for d in docs if d.get("bibcode") not in EXCLUDE_BIBCODES and tex_group(d)]
     listed.sort(key=lambda d: str(d.get("year") or ""), reverse=True)  # keeps SciX order within a year
-    known = {letters(clean_text((d.get("title") or [""])[0])) for d in listed}
+    known = {title_key(d) for d in listed}
     extras = extra_entries(path.parent / "publications-extra.tex")
     lines = [
         "% Publications, written from SciX by scripts/update_publications.py",
@@ -560,6 +578,7 @@ def main():
         docs = fetch_ads(token)
 
     update_preprints(docs)
+    docs = drop_duplicates(docs)
     citations = h_index = bibtex = None
     if not args.input:
         listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
