@@ -563,7 +563,8 @@ li { margin: 0.35em 0; }
   display: flex; gap: 2px;
   margin: 0; padding: 0; list-style: none;
 }
-.chart-col { position: relative; flex: 1; display: flex; justify-content: center; border-radius: 6px; outline-offset: 0; }
+/* margin 0: no list spacing, so the columns span the whole plot height */
+.chart-col { position: relative; flex: 1; margin: 0; display: flex; justify-content: center; border-radius: 6px; outline-offset: 0; }
 .chart-col:hover, .chart-col:focus-visible { background: var(--accent-soft); }
 .chart-bar {
   display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
@@ -600,13 +601,15 @@ li { margin: 0.35em 0; }
 /* No gaps between columns, so the dots sit where the curves are drawn */
 .chart-points { gap: 0; }
 .chart-points .chart-col { display: block; }
+/* Centred on its point: left/bottom place the centre, the transform shifts by half the dot */
 .dot {
-  position: absolute; left: 50%; width: 9px; height: 9px; margin: 0 0 -4.5px -4.5px;
+  position: absolute; left: 50%; width: 9px; height: 9px;
   border-radius: 50%; border: 2px solid var(--surface); box-sizing: content-box;
+  transform: translate(-50%, 50%); transition: transform 0.15s;
 }
 .dot-ref-ref { background: var(--series-1); }
 .dot-other { background: var(--series-2); }
-.chart-points .chart-col:hover .dot, .chart-points .chart-col:focus-visible .dot { transform: scale(1.3); }
+.chart-points .chart-col:hover .dot, .chart-points .chart-col:focus-visible .dot { transform: translate(-50%, 50%) scale(1.3); }
 .chart-points .chart-year { left: 50%; transform: translateX(-50%); }
 .chart.reveal .chart-lines { opacity: 0; transition: opacity 0.6s 0.2s; }
 .chart.reveal.in .chart-lines { opacity: 1; }
@@ -626,7 +629,8 @@ li { margin: 0.35em 0; }
 .network-head .chart-note { margin: 0; max-width: 70ch; }
 .network-body { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
 .network-plot { margin: 0 auto; width: 100%; max-width: 560px; }
-.network-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* Not the icon outline that all other svg get: it blurs the text */
+.network-plot svg { display: block; width: 100%; height: auto; overflow: visible; stroke: none; stroke-width: 1; }
 .network-plot figcaption { margin-top: 6px; text-align: center; font-size: 0.85rem; color: var(--muted); }
 .switch { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .switch input { accent-color: var(--accent); }
