@@ -24,7 +24,7 @@ Each page is a Markdown or HTML file:
 
 ## Publication list
 
-The papers on the Research page come from SciX (scixplorer.org, the successor of NASA ADS). Every Monday, and on every
+The papers on the Research page come from SciX (scixplorer.org, the successor of NASA ADS). Every day, and on every
 push, the workflow in `.github/workflows/pages.yml` runs
 `scripts/update_publications.py`. The script asks SciX for papers linked to the
 ORCID or by name and sorts them into first-author papers, co-authored papers,
