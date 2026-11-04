@@ -10,8 +10,8 @@ Each page is a Markdown or HTML file:
 |---|---|
 | `index.html` | Home (figures and latest papers are filled in from the data files) |
 | `research.html` | Research → Publications (from `_data/publications.json`) |
-| `research-data.html` | Research → Data |
-| `research-codes.html` | Research → Codes (from `_data/codes.yml`) |
+| `research-data.html` | Research → Data (from the same CV section) |
+| `research-codes.html` | Research → Codes (from the CV's "Research Data & Software" section) |
 | `research-networks.html` | Research → Networks (from `_data/networks.json`) |
 | `talks.html` | Talks and conferences (from `_data/talks.json`, built from the CV) |
 | `cv.html` | CV (from `_data/cv.json`, built from the CV) |
@@ -65,6 +65,10 @@ compiles the PDF behind the "Download the full CV" button.
 - Entries are read from `\cventry{date}{text}` and
   `\talkentry{date}{event (oral|poster|ePoster)}{title}` under each `\section`.
   The Publications and Talks sections become links to their own pages.
+- The "Research Data & Software" section also fills Research → Codes and
+  Research → Data: entries dated "Code release" go to Codes, the others
+  ("Data release") to Data. A paper named as "Surname et al. 2026" in any CV
+  entry is linked to it on SciX.
 - The CV's publication list is written from SciX: every build replaces
   `publications.tex` in the CV repository (read by `\input{publications}` in
   `main.tex`) and pushes it there when it changes. Get it in Overleaf with
@@ -77,12 +81,20 @@ compiles the PDF behind the "Download the full CV" button.
   (`_data/cv.json`, `_data/talks.json`) are used, and the download button opens
   the Drive copy set in `_config.yml`.
 
+## Broken links
+
+`.github/workflows/links.yml` checks every link on the live site each Monday
+(and from the Actions tab: **Check links → Run workflow**). When a link is
+broken the run fails, GitHub emails you, and the run's page lists each broken
+link with the page it is on. Google Scholar and Scopus are skipped, since they
+refuse automated checks.
+
 ## Search engines and sharing
 
 - Each page has a `description:` line in its front matter; Google shows it under
   the page title in search results.
 - The home page carries profile data for Google (name, job, affiliations,
-  ORCID, Scopus, GitHub), taken from `author:` in `_config.yml`.
+  ORCID, Google Scholar, Scopus, GitHub), taken from `author:` in `_config.yml`.
 - `assets/img/share.jpg` (1200×630) is the picture shown when a link to the site
   is shared. To verify the site in Google Search Console, choose the "HTML tag"
   method and paste its code into `google_site_verification` in `_config.yml`.

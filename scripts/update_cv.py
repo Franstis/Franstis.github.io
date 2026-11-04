@@ -5,6 +5,11 @@ Reads main.tex and writes:
   _data/cv.json     every \\section of the CV as date + text entries; Publications
                     and Talks only as links to their own pages
   _data/talks.json  the \\talkentry lines of "Selected Talks & Conferences"
+and, in cv.json, "releases": the entries of the data and software section
+("Research Data & Software"), each marked "code" or "data" by its date column
+("Code release", "Data release"), for the Research → Codes and Data pages.
+A paper named in the text as "Surname et al. 2026" is linked to it on SciX,
+when _data/publications.json has it.
 
 The CV is expected to use the commands defined in main.tex:
   \\cventry{date}{text}
@@ -26,6 +31,12 @@ import sys
 import unicodedata
 
 DATA = pathlib.Path(__file__).resolve().parent.parent / "_data"
+PAPER_URL = "https://scixplorer.org/abs/arXiv:{}/abstract"
+# "Mangola et al. 2026", "Pistis et al. (2025)"
+CITED = re.compile(r"\b([A-Z][^\s,;()<>]*) et al\.?,? (?:\(((?:19|20)\d\d)\)|((?:19|20)\d\d)\b)")
+# The CV section listing released codes and data, and how to tell them apart
+RELEASES = re.compile(r"data|software|code", re.I)
+CODE = re.compile(r"code|software", re.I)
 
 # Sections shown on their own pages: the CV page links to them instead
 OWN_PAGES = {"publications": "/research/", "talks": "/talks/"}
@@ -241,6 +252,57 @@ def parse(tex):
     return shown, talks
 
 
+def fold(text):
+    return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c)).lower()
+
+
+def known_papers():
+    """{(surname, year): url} for the papers in _data/publications.json that
+    have an arXiv id, refereed ones first; names shared by two papers are left out."""
+    path = DATA / "publications.json"
+    if not path.exists():
+        return {}
+    found = {}
+    for group in json.loads(path.read_text()).get("groups", []):
+        for p in group["items"]:
+            if not p.get("authors") or not (p.get("arxiv") or p.get("doi")):
+                continue
+            # "Mangola E. S." -> "mangola", "Le Fèvre O." -> "le fèvre"
+            words = p["authors"][0]["name"].split()
+            surname = " ".join(w for w in words if not re.fullmatch(r"[A-Z][a-z]?\.(-[A-Z]\.)?", w))
+            url = PAPER_URL.format(p["arxiv"]) if p.get("arxiv") else f"https://doi.org/{p['doi']}"
+            found.setdefault((fold(surname), str(p["year"])), []).append((group["key"], url))
+    out = {}
+    for key, papers in found.items():
+        refereed = [u for g, u in papers if g in ("first_author", "coauthor")]
+        if len(papers) == 1 or len(refereed) == 1:
+            out[key] = papers[0][1] if len(papers) == 1 else refereed[0]
+    return out
+
+
+def link_papers(fragment, papers):
+    """Link "Surname et al. YEAR" to the paper, outside links already there."""
+    def link(m):
+        url = papers.get((fold(m.group(1)), m.group(2) or m.group(3)))
+        return f'<a href="{html.escape(url)}">{m.group(0)}</a>' if url else m.group(0)
+    parts = re.split(r"(<a\b.*?</a>)", fragment, flags=re.S)
+    return "".join(part if i % 2 else CITED.sub(link, part) for i, part in enumerate(parts))
+
+
+def add_releases(cv):
+    """Link papers in every entry, and list the data and software section's
+    entries as cv["releases"] for the Codes and Data pages."""
+    papers = known_papers()
+    for s in cv["sections"]:
+        for g in s["groups"]:
+            for e in g["entries"]:
+                e["html"] = link_papers(e["html"], papers)
+    section = next((s for s in cv["sections"] if not s["link"] and RELEASES.search(s["title"])), None)
+    cv["releases"] = [{"kind": "code" if CODE.search(e["date"]) else "data", "html": e["html"]}
+                      for g in (section["groups"] if section else []) for e in g["entries"]]
+    return cv
+
+
 def main():
     if len(sys.argv) != 2:
         print(__doc__)
@@ -253,11 +315,15 @@ def main():
     if not sections or not talks:
         print("No CV entries or talks found in the .tex file; keeping the existing data.", file=sys.stderr)
         return 1
-    cv = {"updated": datetime.date.today().isoformat(), "sections": sections}
+    cv = add_releases({"updated": datetime.date.today().isoformat(), "sections": sections})
     (DATA / "cv.json").write_text(json.dumps(cv, ensure_ascii=False, indent=2) + "\n")
     (DATA / "talks.json").write_text(json.dumps(talks, ensure_ascii=False, indent=2) + "\n")
     entries = sum(len(g["entries"]) for s in sections for g in s["groups"])
-    print(f"Wrote cv.json ({len(sections)} sections, {entries} entries) and talks.json ({len(talks)} talks)")
+    kinds = [r["kind"] for r in cv["releases"]]
+    print(f"Wrote cv.json ({len(sections)} sections, {entries} entries, {kinds.count('code')} code and "
+          f"{kinds.count('data')} data releases) and talks.json ({len(talks)} talks)")
+    if not kinds:
+        print("::warning::No data and software section found in the CV: the Codes and Data pages are empty.")
     return 0
 
 

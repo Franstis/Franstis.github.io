@@ -73,15 +73,15 @@
           "entries": [
             {
               "date": "Code release",
-              "html": "<strong>Neural networks for detection of absorption lines in quasar spectra</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to Mangola et al. 2026)"
+              "html": "<strong>Neural networks for detection of absorption lines in quasar spectra</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to <a href=\"https://scixplorer.org/abs/arXiv:2609.28072/abstract\">Mangola et al. 2026</a>)"
             },
             {
               "date": "Code release",
-              "html": "<strong>Neural networks for quasar continuum fitting (different wavelength range from previous version)</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to Mangola et al. 2026)"
+              "html": "<strong>Neural networks for quasar continuum fitting (different wavelength range from previous version)</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to <a href=\"https://scixplorer.org/abs/arXiv:2609.28072/abstract\">Mangola et al. 2026</a>)"
             },
             {
               "date": "Code release",
-              "html": "<strong>Neural networks for quasar continuum fitting</strong> – <a href=\"https://zenodo.org/records/15011824\">Zenodo</a> (linked to Pistis et al. 2025)"
+              "html": "<strong>Neural networks for quasar continuum fitting</strong> – <a href=\"https://zenodo.org/records/15011824\">Zenodo</a> (linked to <a href=\"https://scixplorer.org/abs/arXiv:2505.10976/abstract\">Pistis et al. 2025</a>)"
             },
             {
               "date": "Data release",
@@ -269,6 +269,24 @@
           ]
         }
       ]
+    }
+  ],
+  "releases": [
+    {
+      "kind": "code",
+      "html": "<strong>Neural networks for detection of absorption lines in quasar spectra</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to <a href=\"https://scixplorer.org/abs/arXiv:2609.28072/abstract\">Mangola et al. 2026</a>)"
+    },
+    {
+      "kind": "code",
+      "html": "<strong>Neural networks for quasar continuum fitting (different wavelength range from previous version)</strong> – <a href=\"https://zenodo.org/records/22711575\">Zenodo</a> (linked to <a href=\"https://scixplorer.org/abs/arXiv:2609.28072/abstract\">Mangola et al. 2026</a>)"
+    },
+    {
+      "kind": "code",
+      "html": "<strong>Neural networks for quasar continuum fitting</strong> – <a href=\"https://zenodo.org/records/15011824\">Zenodo</a> (linked to <a href=\"https://scixplorer.org/abs/arXiv:2505.10976/abstract\">Pistis et al. 2025</a>)"
+    },
+    {
+      "kind": "data",
+      "html": "<strong>Spectroscopic catalog</strong> (VIPERS, emission lines) – <a href=\"https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A+A/683/A203\">CDS: J/A+A/683/A203</a>"
     }
   ]
 }

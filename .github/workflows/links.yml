@@ -1,0 +1,45 @@
+# Checks every link on the live site once a week (and on demand from the
+# Actions tab). If any is broken the run fails, GitHub emails you, and the
+# run's summary page lists each broken link and the page it is on.
+name: Check links
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays, 06:00 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/links.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List the site's pages (from its sitemap)
+        id: pages
+        run: |
+          pages=$(curl -fsS https://franstis.github.io/sitemap.xml \
+            | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g' | grep -v '\.pdf$' | tr '\n' ' ')
+          echo "$pages"
+          echo "list=$pages" >> "$GITHUB_OUTPUT"
+
+      # 403 and 429: publishers' sites (doi.org links) and Scopus turn away
+      # automated checks, which says nothing about the link itself.
+      # Google Scholar and Scopus block them entirely, so they are skipped.
+      - name: Check every link on those pages
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-retries 3 --retry-wait-time 10 --timeout 45
+            --accept '200..=299,403,429'
+            --exclude 'scholar\.google\.com'
+            --exclude 'scopus\.com'
+            --user-agent 'Mozilla/5.0 (link check for franstis.github.io)'
+            ${{ steps.pages.outputs.list }}
+          format: markdown
+          jobSummary: true
+          fail: true

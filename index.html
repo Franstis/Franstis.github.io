@@ -14,12 +14,15 @@ actions:
 {% assign first = groups | where: "key", "first_author" | first %}
 {% assign co = groups | where: "key", "coauthor" | first %}
 {% assign refereed = first.items.size | plus: co.items.size %}
+{% assign codes = site.data.cv.releases | where: "kind", "code" %}
 
 <ul class="links">
   <li><a href="https://orcid.org/{{ site.author.orcid }}">ORCID</a></li>
   <li><a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a></li>
   <li><a href="https://arxiv.org/search/?query=Pistis%2C+Francesco&amp;searchtype=author&amp;order=-announced_date_first">arXiv</a></li>
+  <li><a href="https://scholar.google.com/citations?user={{ site.author.scholar }}">Google Scholar</a></li>
   <li><a href="https://www.scopus.com/authid/detail.uri?authorId={{ site.author.scopus }}">Scopus</a></li>
+  <li><a href="https://github.com/{{ site.author.github }}">GitHub</a></li>
   <li><a href="{{ '/contact/' | relative_url }}">Email</a></li>
 </ul>
 
@@ -29,7 +32,7 @@ actions:
   <li class="stat"><a href="{{ '/research/' | relative_url }}?filter=first_author"><span class="stat-value" data-count="{{ first.items.size }}">{{ first.items.size }}</span><span class="stat-label">as first author</span></a></li>
   {% if site.data.publications.h_index %}<li class="stat"><a href="{{ '/research/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.publications.h_index }}">{{ site.data.publications.h_index }}</span><span class="stat-label">h-index (SciX)</span></a></li>{% endif %}
   <li class="stat"><a href="{{ '/talks/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.talks.size }}">{{ site.data.talks.size }}</span><span class="stat-label">talks &amp; posters</span></a></li>
-  <li class="stat"><a href="{{ '/research/codes/' | relative_url }}"><span class="stat-value" data-count="{{ site.data.codes.size }}">{{ site.data.codes.size }}</span><span class="stat-label">public codes</span></a></li>
+  <li class="stat"><a href="{{ '/research/codes/' | relative_url }}"><span class="stat-value" data-count="{{ codes.size }}">{{ codes.size }}</span><span class="stat-label">public codes</span></a></li>
 </ul>
 
 <h2>About me</h2>

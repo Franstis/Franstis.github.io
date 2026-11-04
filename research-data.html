@@ -7,9 +7,10 @@ subnav: research
 description: "Catalogues released with Francesco Pistis's papers."
 body_class: research
 ---
+<!-- From the CV's "Research Data & Software" section (scripts/update_cv.py) -->
+{% assign releases = site.data.cv.releases | where: "kind", "data" %}
 <p class="lead">Catalogues released with my papers.</p>
-<ul>
-  <li><strong>VIPERS emission-line catalogue.</strong> Spectroscopic measurements of emission lines for
-    VIPERS galaxies, released with Pistis et al. (2024):
-    <a href="https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A+A/683/A203">CDS J/A+A/683/A203</a></li>
-</ul>
+{% if releases.size > 0 %}<ul class="releases">
+  {% for r in releases %}<li>{{ r.html }}</li>
+  {% endfor %}
+</ul>{% else %}<p>None yet.</p>{% endif %}
