@@ -68,6 +68,8 @@ MAX_TEX_AUTHORS = 30
 ADS_URL = "https://api.adsabs.harvard.edu/v1/search/query"
 METRICS_URL = "https://api.adsabs.harvard.edu/v1/metrics"
 EXPORT_URL = "https://api.adsabs.harvard.edu/v1/export/bibtex"
+VIS_URL = "https://api.adsabs.harvard.edu/v1/vis/{}-network"
+NETWORK_DIR = pathlib.Path(__file__).resolve().parent.parent / "assets" / "data"
 ARXIV_URL = "https://export.arxiv.org/api/query"
 CROSSREF_URL = "https://api.crossref.org/works"
 USER_AGENT = "publication-list/1.0 (+https://franstis.github.io)"
@@ -188,16 +190,16 @@ def shares_author(authors_a, authors_b):
     return any(same_person(a, b) for a in map(author_key, authors_a) for b in keys_b.get(a[0], []))
 
 
-def fetch_clean_citations(token, papers):
-    """For each refereed paper, the years of the refereed papers citing it,
-    leaving out self-citations: citing papers that share any author with it."""
-    years, dropped = {}, 0
-    for doc in papers:
+def fetch_citing(token, docs, refereed_bibcodes):
+    """For each paper, its citations as (year, citing paper refereed?, self-citation?).
+    A self-citation is a citing paper that shares any author with the cited one."""
+    cites, kept, dropped = {}, 0, 0
+    for doc in docs:
         citing, start = [], 0
         while True:
             params = urllib.parse.urlencode({
-                "q": f'citations(bibcode:"{doc["bibcode"]}") property:refereed',
-                "fl": "bibcode,author,year", "rows": 2000, "start": start})
+                "q": f'citations(bibcode:"{doc["bibcode"]}")',
+                "fl": "bibcode,author,year,property", "rows": 2000, "start": start})
             req = urllib.request.Request(f"{ADS_URL}?{params}", headers={"Authorization": f"Bearer {token}"})
             with urllib.request.urlopen(req, timeout=60) as resp:
                 body = json.load(resp)["response"]
@@ -206,12 +208,40 @@ def fetch_clean_citations(token, papers):
             if not body["docs"] or start >= body["numFound"]:
                 break
         own = doc.get("author") or []
-        kept = [c for c in citing if not shares_author(c.get("author") or [], own)]
-        dropped += len(citing) - len(kept)
-        years[doc["bibcode"]] = [int(c["year"]) for c in kept if str(c.get("year") or "").isdigit()]
-    print(f"::notice::h-index: {len(papers)} refereed papers, {sum(map(len, years.values()))} citations kept, "
-          f"{dropped} self-citations left out")
-    return years
+        rows = [(int(c["year"]), "REFEREED" in (c.get("property") or []),
+                 shares_author(c.get("author") or [], own))
+                for c in citing if str(c.get("year") or "").isdigit()]
+        cites[doc["bibcode"]] = rows
+        if doc["bibcode"] in refereed_bibcodes:
+            kept += sum(1 for _, ref, own_ in rows if ref and not own_)
+            dropped += sum(1 for _, ref, own_ in rows if ref and own_)
+    print(f"::notice::h-index: {len(refereed_bibcodes)} refereed papers, {kept} refereed citations kept, "
+          f"{dropped} self-citations left out; {sum(map(len, cites.values()))} citations to all {len(docs)} papers")
+    return {"refereed": refereed_bibcodes, "cites": cites}
+
+
+def shape(value, depth=0):
+    """Short outline of a JSON value, for the build log."""
+    if isinstance(value, dict):
+        if depth > 2:
+            return "{...}"
+        return "{" + ", ".join(f"{k}: {shape(v, depth + 1)}" for k, v in list(value.items())[:8]) + "}"
+    if isinstance(value, list):
+        return f"[{len(value)} x {shape(value[0], depth + 1) if value else ''}]"
+    return type(value).__name__
+
+
+def fetch_networks(token, bibcodes):
+    """SciX's author network and paper network for the papers, saved as they come."""
+    NETWORK_DIR.mkdir(parents=True, exist_ok=True)
+    for kind in ("author", "paper"):
+        try:
+            data = post_ads(VIS_URL.format(kind), token, {"bibcodes": bibcodes})
+        except Exception as err:
+            print(f"::warning::SciX {kind} network failed ({err!r}); keeping the saved one.")
+            continue
+        (NETWORK_DIR / f"scix-{kind}-network.json").write_text(json.dumps(data, ensure_ascii=False) + "\n")
+        print(f"::notice::SciX {kind} network: {shape(data)[:900]}")
 
 
 def h_of(counts):
@@ -489,8 +519,44 @@ READ_TYPES = [
     ("refereed", "Reads of refereed papers", "refereed"),
     ("other", "Reads of non-refereed papers", "non-refereed"),
 ]
-# h-index chart: one colour, the refereed -> refereed one of the citations chart
-H_TYPES = [("ref-ref", "h-index", "h-index")]
+# h-index curves: (key, legend label, short label for the tooltip); the strict
+# one takes the refereed -> refereed colour of the citations chart
+H_TYPES = [
+    ("ref-ref", "Refereed citations to refereed papers, without self-citations", "strict"),
+    ("other", "All citations to all papers", "with all citations"),
+]
+
+
+def h_chart(cited, years, h_index=None):
+    """The h-index at the end of each year, as two curves (see H_TYPES)."""
+    this_year = datetime.date.today().year
+    strict = {b: [y for y, ref, own in rows if ref and not own]
+              for b, rows in cited["cites"].items() if b in cited["refereed"]}
+    every = {b: [y for y, _, _ in rows] for b, rows in cited["cites"].items()}
+    values = {y: [h_of([sum(1 for c in cy if c <= y) for cy in group.values()]) for group in (strict, every)]
+              for y in years}
+    top = axis(max(max(v) for v in values.values()))[-1]
+    n = len(years)
+    label = lambda y: n <= 10 or (this_year - y) % 2 == 0
+    now = values[years[-1]]
+    if h_index and now[1] != h_index:
+        print(f"::notice::h-index with all citations: {now[1]} here, {h_index} on SciX")
+    return {
+        "id": "h-index", "kind": "line", "title": "h-index over the years",
+        "note": f"{now[0]} strict · {now[1]} with all citations", "unit": {"one": "", "many": ""},
+        "detail": None, "prefix": "h-index",
+        "types": [{"key": k, "label": label_} for k, label_, _ in H_TYPES],
+        "ticks": [{"value": t, "pct": pct(t, top)} for t in axis(top)],
+        "lines": [{"key": k, "points": " ".join(
+            f"{round(100 * (i + 0.5) / n, 2)},{round(100 - pct(values[y][j], top), 2)}" for i, y in enumerate(years))}
+            for j, (k, _, _) in enumerate(H_TYPES)],
+        "years": [{
+            "year": y, "label": label(y), "partial": y == this_year, "count": values[y][0],
+            "bar_pct": pct(max(values[y]), top),
+            "segments": [{"key": k, "short": short, "count": values[y][j], "pct": pct(values[y][j], top)}
+                         for j, (k, _, short) in enumerate(H_TYPES)],
+        } for y in years],
+    }
 
 
 def charts(grouped, citations=None, h_index=None, reads=None, cited_years=None):
@@ -523,13 +589,7 @@ def charts(grouped, citations=None, h_index=None, reads=None, cited_years=None):
         out.append(year_chart("reads", "Reads per year", {"one": "read", "many": "reads"},
                               f"{total} in total", READ_TYPES, per_year))
     if cited_years is not None:
-        # h-index at the end of each year, from the citations made up to then
-        per_year = {y: [h_of([sum(1 for c in cy if c <= y) for cy in cited_years.values()])] for y in years}
-        now = per_year[years[-1]][0]
-        note = f"{now} now" + (f" · {h_index} counting all citations" if h_index and h_index != now else "")
-        out.append(year_chart("h-index", "h-index over the years", {"one": "", "many": ""}, note, H_TYPES,
-                              per_year, prefix="h-index",
-                              detail="Refereed citations to refereed papers, without self-citations of any author"))
+        out.append(h_chart(cited_years, years, h_index))
     return out
 
 
@@ -716,10 +776,12 @@ def main():
         except Exception as err:
             print(f"::warning::SciX metrics failed ({err!r}); citations, reads and h-index are left out.")
         try:
-            refereed = [d for d in docs if d.get("bibcode") in listed and group_of(d) in ("first_author", "coauthor")]
-            cited_years = fetch_clean_citations(token, refereed)
+            papers = [d for d in docs if d.get("bibcode") in listed]
+            refereed = {d["bibcode"] for d in papers if group_of(d) in ("first_author", "coauthor")}
+            cited_years = fetch_citing(token, papers, refereed)
         except Exception as err:
             print(f"::warning::SciX citation lists failed ({err!r}); the h-index chart is left out.")
+        fetch_networks(token, listed)
         try:
             bibtex = fetch_bibtex(token, listed)
         except Exception as err:
