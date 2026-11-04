@@ -4,7 +4,7 @@ title: Publications
 heading: Research
 permalink: /research/
 subnav: research
-description: "Publications by Francesco Pistis on galaxy evolution, quasar spectroscopy and machine learning, with papers and citations per year."
+description: "Publications by Francesco Pistis on galaxy evolution, quasar spectroscopy and machine learning, with papers, citations and reads per year and the h-index over time."
 body_class: research
 ---
 {% assign pubs = site.data.publications %}
@@ -26,7 +26,7 @@ body_class: research
       <span class="chart-title">{{ chart.title }}</span>
       <span class="chart-note">{{ chart.note }}</span>
     </figcaption>
-    {% if chart.types.size > 1 %}<ul class="chart-legend" aria-hidden="true">
+    {% if chart.detail %}<p class="chart-note">{{ chart.detail }}</p>{% elsif chart.types.size > 1 %}<ul class="chart-legend" aria-hidden="true">
       {% for t in chart.types %}<li><i class="key key-{{ t.key }}"></i>{{ t.label }}</li>{% endfor %}
     </ul>{% elsif chart.types.size == 1 %}<p class="chart-note">All {{ chart.types[0].label | downcase }}</p>{% endif %}
     <div class="chart-plot">
@@ -35,7 +35,7 @@ body_class: research
         {% for y in chart.years %}<li class="chart-col" tabindex="0" style="--h: {{ y.bar_pct }}%; --i: {{ forloop.index0 }}">
           <span class="chart-bar">{% for seg in y.segments %}<span class="seg seg-{{ seg.key }}" style="height: {{ seg.pct }}%"></span>{% endfor %}</span>
           <span class="chart-year" aria-hidden="true">{% if y.label %}{{ y.year }}{% endif %}</span>
-          <span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}: {{ y.count }} {% if y.count == 1 %}{{ chart.unit.one }}{% else %}{{ chart.unit.many }}{% endif %}</strong>{% if chart.types.size > 1 %}{% for seg in y.segments reversed %}<span>{{ seg.count }} {{ seg.short }}</span>{% endfor %}{% endif %}</span>
+          <span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}: {% if chart.prefix %}{{ chart.prefix }} {{ y.count }}{% else %}{{ y.count }} {% if y.count == 1 %}{{ chart.unit.one }}{% else %}{{ chart.unit.many }}{% endif %}{% endif %}</strong>{% if chart.types.size > 1 %}{% for seg in y.segments reversed %}<span>{{ seg.count }} {{ seg.short }}</span>{% endfor %}{% endif %}</span>
         </li>{% endfor %}
       </ol>
     </div>

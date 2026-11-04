@@ -37,6 +37,7 @@ import pathlib
 import re
 import sys
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -146,13 +147,74 @@ CITATION_TYPES = [
 
 
 def fetch_metrics(token, bibcodes):
-    """Citations per year by type ({type: {year: n}}) and the h-index."""
+    """Citations per year by type ({type: {year: n}}), reads per year
+    ({"all"/"refereed": {year: n}}) and the h-index, in one call."""
     metrics = post_ads(METRICS_URL, token, {
-        "bibcodes": bibcodes, "types": ["histograms", "indicators"], "histograms": ["citations"]})
+        "bibcodes": bibcodes, "types": ["histograms", "indicators"], "histograms": ["citations", "reads"]})
+    per_year = lambda h: {int(y): int(n) for y, n in h.items()}
     histogram = metrics["histograms"]["citations"]
-    citations = {key: {int(y): int(n) for y, n in histogram.get(name, {}).items()}
-                 for key, name, _, _ in CITATION_TYPES}
-    return citations, metrics["indicators"]["h"]
+    citations = {key: per_year(histogram.get(name, {})) for key, name, _, _ in CITATION_TYPES}
+    reads_histogram = metrics["histograms"].get("reads", {})
+    reads = {"all": per_year(reads_histogram.get("all reads", {})),
+             "refereed": per_year(reads_histogram.get("refereed reads", {}))}
+    return citations, reads, metrics["indicators"]["h"]
+
+
+def author_key(full):
+    """'Pérez-Ràfols, Ignasi' -> ('perezrafols', 'ignasi'); first given name or initial."""
+    fold = lambda t: re.sub(r"[^a-z]", "", unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode().lower())
+    surname, _, given = full.partition(",")
+    first = given.replace(".", ". ").split()
+    return fold(surname), (first[0] if first else "")
+
+
+def same_person(a, b):
+    """Same surname, and the same first name (or the same initial when one is abbreviated)."""
+    if a[0] != b[0]:
+        return False
+    fa, fb = a[1], b[1]
+    if not fa or not fb:
+        return True
+    if fa.endswith(".") or fb.endswith(".") or len(fa) == 1 or len(fb) == 1:
+        return fa[0].lower() == fb[0].lower()
+    return fa.lower() == fb.lower()
+
+
+def shares_author(authors_a, authors_b):
+    keys_b = {}
+    for key in map(author_key, authors_b):
+        keys_b.setdefault(key[0], []).append(key)
+    return any(same_person(a, b) for a in map(author_key, authors_a) for b in keys_b.get(a[0], []))
+
+
+def fetch_clean_citations(token, papers):
+    """For each refereed paper, the years of the refereed papers citing it,
+    leaving out self-citations: citing papers that share any author with it."""
+    years, dropped = {}, 0
+    for doc in papers:
+        citing, start = [], 0
+        while True:
+            params = urllib.parse.urlencode({
+                "q": f'citations(bibcode:"{doc["bibcode"]}") property:refereed',
+                "fl": "bibcode,author,year", "rows": 2000, "start": start})
+            req = urllib.request.Request(f"{ADS_URL}?{params}", headers={"Authorization": f"Bearer {token}"})
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                body = json.load(resp)["response"]
+            citing += body["docs"]
+            start += len(body["docs"])
+            if not body["docs"] or start >= body["numFound"]:
+                break
+        own = doc.get("author") or []
+        kept = [c for c in citing if not shares_author(c.get("author") or [], own)]
+        dropped += len(citing) - len(kept)
+        years[doc["bibcode"]] = [int(c["year"]) for c in kept if str(c.get("year") or "").isdigit()]
+    print(f"h-index citations: {sum(map(len, years.values()))} kept, {dropped} self-citations left out")
+    return years
+
+
+def h_of(counts):
+    counts = sorted(counts, reverse=True)
+    return sum(1 for i, n in enumerate(counts) if n >= i + 1)
 
 
 def fetch_bibtex(token, bibcodes):
@@ -395,8 +457,10 @@ PAPER_TYPES = [
 ]
 
 
-def year_chart(key, title, unit, note, types, per_year):
-    """One stacked bar per year; per_year: {year: [count for each of `types`]}."""
+def year_chart(key, title, unit, note, types, per_year, detail=None, prefix=None):
+    """One stacked bar per year; per_year: {year: [count for each of `types`]}.
+    detail: line under the title in place of the legend; prefix: tooltip reads
+    "2024: <prefix> 5" instead of "2024: 5 <unit>"."""
     this_year = datetime.date.today().year
     years = sorted(per_year)
     # Label every year, or every other one (ending on the latest) when crowded
@@ -405,7 +469,7 @@ def year_chart(key, title, unit, note, types, per_year):
     # Only the types with something to show get a colour and a legend entry
     shown = [i for i in range(len(types)) if any(c[i] for c in per_year.values())]
     return {
-        "id": key, "title": title, "note": note, "unit": unit,
+        "id": key, "title": title, "note": note, "unit": unit, "detail": detail, "prefix": prefix,
         "types": [{"key": types[i][0], "label": types[i][1]} for i in shown],
         "ticks": [{"value": t, "pct": pct(t, top)} for t in axis(top)],
         "years": [{
@@ -418,8 +482,18 @@ def year_chart(key, title, unit, note, types, per_year):
     }
 
 
-def charts(grouped, citations, h_index=None):
-    """Papers and citations per year for the Publications tab, drawn alike."""
+# Reads chart: same colours as the papers chart
+READ_TYPES = [
+    ("refereed", "Reads of refereed papers", "refereed"),
+    ("other", "Reads of non-refereed papers", "non-refereed"),
+]
+# h-index chart: one colour, the refereed -> refereed one of the citations chart
+H_TYPES = [("ref-ref", "h-index", "h-index")]
+
+
+def charts(grouped, citations=None, h_index=None, reads=None, cited_years=None):
+    """Papers, citations and reads per year, and the h-index over the years,
+    for the Publications tab, drawn alike."""
     papers = {}
     for key, items in grouped.items():
         kind = 0 if key in ("first_author", "coauthor") else 1
@@ -439,10 +513,25 @@ def charts(grouped, citations, h_index=None):
         note = f"{total} in total" + (f" · h-index {h_index}" if h_index else "")
         out.append(year_chart("citations", "Citations per year", {"one": "citation", "many": "citations"},
                               note, [(k, label, short) for k, _, label, short in CITATION_TYPES], per_year))
+    if reads is not None and any(reads["all"].get(y) for y in years):
+        # SciX gives all reads and reads of refereed papers; the rest are non-refereed
+        per_year = {y: [reads["refereed"].get(y, 0), max(reads["all"].get(y, 0) - reads["refereed"].get(y, 0), 0)]
+                    for y in years}
+        total = sum(sum(c) for c in per_year.values())
+        out.append(year_chart("reads", "Reads per year", {"one": "read", "many": "reads"},
+                              f"{total} in total", READ_TYPES, per_year))
+    if cited_years is not None:
+        # h-index at the end of each year, from the citations made up to then
+        per_year = {y: [h_of([sum(1 for c in cy if c <= y) for cy in cited_years.values()])] for y in years}
+        now = per_year[years[-1]][0]
+        note = f"{now} now" + (f" · {h_index} counting all citations" if h_index and h_index != now else "")
+        out.append(year_chart("h-index", "h-index over the years", {"one": "", "many": ""}, note, H_TYPES,
+                              per_year, prefix="h-index",
+                              detail="Refereed citations to refereed papers, without self-citations of any author"))
     return out
 
 
-def build(docs, source, citations=None, h_index=None, bibtex=None):
+def build(docs, source, citations=None, h_index=None, bibtex=None, reads=None, cited_years=None):
     grouped = {key: [] for key, _ in GROUPS}
     recent = []
     for doc in docs:
@@ -463,7 +552,7 @@ def build(docs, source, citations=None, h_index=None, bibtex=None):
         "me_name": short_name(f"{MY_SURNAME}, F."),
         "groups": [{"key": k, "title": t, "items": grouped[k]} for k, t in GROUPS],
         "latest": recent,
-        "charts": charts(grouped, citations, h_index),
+        "charts": charts(grouped, citations, h_index, reads, cited_years),
         "h_index": h_index,
     }
 
@@ -616,19 +705,24 @@ def main():
 
     update_preprints(docs)
     docs = drop_duplicates(docs)
-    citations = h_index = bibtex = None
+    citations = h_index = bibtex = reads = cited_years = None
     if not args.input:
         listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
                   and d["bibcode"] not in EXCLUDE_BIBCODES]
         try:
-            citations, h_index = fetch_metrics(token, listed)
+            citations, reads, h_index = fetch_metrics(token, listed)
         except Exception as err:
-            print(f"SciX metrics failed ({err}); citations and h-index are left out.", file=sys.stderr)
+            print(f"SciX metrics failed ({err}); citations, reads and h-index are left out.", file=sys.stderr)
+        try:
+            refereed = [d for d in docs if d.get("bibcode") in listed and group_of(d) in ("first_author", "coauthor")]
+            cited_years = fetch_clean_citations(token, refereed)
+        except Exception as err:
+            print(f"SciX citation lists failed ({err}); the h-index chart is left out.", file=sys.stderr)
         try:
             bibtex = fetch_bibtex(token, listed)
         except Exception as err:
             print(f"SciX BibTeX export failed ({err}); the BibTeX buttons are left out.", file=sys.stderr)
-    data = build(docs, args.source, citations, h_index, bibtex)
+    data = build(docs, args.source, citations, h_index, bibtex, reads, cited_years)
     if not any(g["items"] for g in data["groups"]):
         print("SciX returned no publications; keeping the existing list.", file=sys.stderr)
         return 1

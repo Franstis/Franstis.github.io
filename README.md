@@ -30,10 +30,15 @@ push, the workflow in `.github/workflows/pages.yml` runs
 ORCID or by name and sorts them into first-author papers, co-authored papers,
 accepted/submitted preprints and conference proceedings.
 
-Above the list, two charts show papers per year (counted from the list) and
-citations per year (from the SciX metrics API, for the papers in the list).
-The citations chart, the h-index and the "Copy BibTeX" buttons only appear
-when the list comes from SciX.
+Above the list, four charts show papers per year (counted from the list),
+citations and reads per year (from the SciX metrics API, for the papers in the
+list) and the h-index at the end of each year. The h-index chart counts only
+refereed papers citing refereed papers, and leaves out self-citations: a citing
+paper that shares any author with the cited one (same surname and first name,
+or the same initial when one is abbreviated). The h-index on the home page is
+SciX's own, counting all citations.
+The citations, reads and h-index charts, the h-index and the "Copy BibTeX"
+buttons only appear when the list comes from SciX.
 
 ## CV and talks (from Overleaf)
 
@@ -92,5 +97,5 @@ compiles the PDF behind the "Download the full CV" button.
    In the repository, open **Settings → Secrets and variables → Actions**, click
    **New repository secret**, name it `ADS_TOKEN` and paste the token.
 
-GitHub builds the site after every push and every Monday. It appears at
+GitHub builds the site after every push and every day. It appears at
 <https://francescopistis.github.io> within a minute or two.
