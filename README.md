@@ -12,6 +12,7 @@ Each page is a Markdown or HTML file:
 | `research.html` | Research → Publications (from `_data/publications.json`) |
 | `research-data.html` | Research → Data |
 | `research-codes.html` | Research → Codes (from `_data/codes.yml`) |
+| `research-networks.html` | Research → Networks (from `_data/networks.json`) |
 | `talks.html` | Talks and conferences (from `_data/talks.json`, built from the CV) |
 | `cv.html` | CV (from `_data/cv.json`, built from the CV) |
 | `contact.html` | Contact |
@@ -32,13 +33,19 @@ accepted/submitted preprints and conference proceedings.
 
 Above the list, four charts show papers per year (counted from the list),
 citations and reads per year (from the SciX metrics API, for the papers in the
-list) and the h-index at the end of each year. The h-index chart counts only
-refereed papers citing refereed papers, and leaves out self-citations: a citing
-paper that shares any author with the cited one (same surname and first name,
-or the same initial when one is abbreviated). The h-index on the home page is
-SciX's own, counting all citations.
+list) and the h-index at the end of each year, as two curves. The strict curve
+counts only refereed papers citing refereed papers, and leaves out
+self-citations: a citing paper that shares any author with the cited one (same
+surname and first name, or the same initial when one is abbreviated). The other
+counts all citations to all papers. The h-index on the home page is SciX's own,
+counting all citations.
 The citations, reads and h-index charts, the h-index and the "Copy BibTeX"
 buttons only appear when the list comes from SciX.
+
+The Networks tab (`research-networks.html`) shows SciX's co-author network and
+paper network for the same papers. The build saves SciX's replies in
+`assets/data/scix-*-network.json`, and `scripts/networks.py` lays them out into
+`_data/networks.json` (run it alone to redo the layout from the saved replies).
 
 ## CV and talks (from Overleaf)
 

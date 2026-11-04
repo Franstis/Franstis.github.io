@@ -617,6 +617,52 @@ li { margin: 0.35em 0; }
 .chart.reveal .seg { transform: scaleY(0); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i) * 70ms + 150ms); }
 .chart.reveal.in .seg { transform: none; }
 
+/* Co-author and paper networks (Research → Networks) --------------------- */
+.network {
+  margin: 24px 0 32px; padding: 18px 18px 12px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+}
+.network figcaption h2 { margin: 0 0 4px; }
+.network figcaption .chart-note { margin: 0; max-width: 62ch; }
+.network .chart-legend { margin: 12px 0 0; }
+.network .chart-legend .muted { color: var(--muted); }
+.network-plot { margin-top: 8px; }
+.network-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.net-1 { --net: var(--series-1); }
+.net-2 { --net: var(--series-2); }
+.net-3 { --net: var(--series-3); }
+.net-4 { --net: var(--series-4); }
+.net-5 { --net: var(--accent-2); }
+.net-6 { --net: var(--muted); }
+.key.net-1, .key.net-2, .key.net-3, .key.net-4, .key.net-5, .key.net-6 { background: var(--net); }
+.net-links line { stroke: var(--muted); stroke-opacity: var(--o, 0.35); stroke-linecap: round; transition: stroke-opacity 0.15s; }
+.net-links line.spoke { stroke-opacity: 0.12; stroke-dasharray: 2 4; }
+.net-node { cursor: default; outline: none; }
+a.net-node { cursor: pointer; }
+.net-node circle {
+  fill: var(--net, var(--text)); stroke: var(--surface); stroke-width: 2;
+  transition: opacity 0.15s, stroke 0.15s;
+}
+.net-me circle { fill: var(--text); }
+.net-node text {
+  font-size: 11px; fill: var(--text); text-anchor: middle; pointer-events: none;
+  paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round;
+  opacity: 0; transition: opacity 0.15s;
+}
+.net-node text.named, .net-me text { opacity: 1; }
+.net-me text { font-weight: 600; }
+.net-node:hover circle, .net-node:focus-visible circle { stroke: var(--text); }
+/* While a circle is highlighted, the rest fades */
+svg.focus .net-node:not(.on) circle { opacity: 0.2; }
+svg.focus .net-node:not(.on) text { opacity: 0; }
+svg.focus .net-node.on text { opacity: 1; }
+svg.focus .net-links line { stroke-opacity: 0.06; }
+svg.focus .net-links line.on { stroke-opacity: 0.8; stroke: var(--text); }
+@media (max-width: 560px) {
+  .network { padding: 14px 12px 8px; }
+  .net-node text { font-size: 15px; }
+}
+
 /* Search and filters (Publications, Talks) ------------------------------- */
 .filter-bar {
   display: flex;

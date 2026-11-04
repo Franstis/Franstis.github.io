@@ -241,7 +241,8 @@ def fetch_networks(token, bibcodes):
             print(f"::warning::SciX {kind} network failed ({err!r}); keeping the saved one.")
             continue
         (NETWORK_DIR / f"scix-{kind}-network.json").write_text(json.dumps(data, ensure_ascii=False) + "\n")
-        print(f"::notice::SciX {kind} network: {shape(data)[:900]}")
+    import networks  # same folder: lays out both networks for the Networks tab
+    networks.build()
 
 
 def h_of(counts):

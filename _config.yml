@@ -53,6 +53,8 @@ subnav:
       url: /research/data/
     - title: Codes
       url: /research/codes/
+    - title: Networks
+      url: /research/networks/
 
 markdown: kramdown
 

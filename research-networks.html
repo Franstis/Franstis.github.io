@@ -1,0 +1,73 @@
+---
+layout: default
+title: Networks
+heading: Research
+permalink: /research/networks/
+subnav: research
+description: "Francesco Pistis's co-author network and paper network, computed by SciX from his publications."
+body_class: research
+---
+{% assign nets = site.data.networks %}
+<p class="lead">Who I write papers with, and how my papers relate through the work they cite.
+Both networks are computed by <a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a>
+from my publication list{% if nets.updated %} (updated {{ nets.updated }}){% endif %}.</p>
+
+{% assign shown = 0 %}{% assign kinds = "author,paper" | split: "," %}
+{% for kind in kinds %}{% assign net = nets[kind] %}{% if net %}{% assign shown = shown | plus: 1 %}
+<figure class="network" id="{{ kind }}-network" data-network>
+  <figcaption>
+    {% if kind == "author" %}
+    <h2>Co-author network <span class="count">{{ net.count }}</span></h2>
+    <p class="chart-note">My co-authors, in the groups SciX finds of people who often write together.
+      Bigger circles: more papers with me. Lines: papers shared between two co-authors.</p>
+    {% else %}
+    <h2>Paper network <span class="count">{{ net.count }}</span></h2>
+    <p class="chart-note">My papers, grouped by the references they share. Bigger circles: more citations.
+      Thicker lines: more references in common. Select a paper to open it on SciX.</p>
+    {% endif %}
+  </figcaption>
+  <ul class="chart-legend">
+    {% for g in net.groups %}<li><i class="key net-{{ g.key }}"></i><span>{{ g.label }}{% if kind == "paper" %} <span class="muted">({{ g.papers }} {% if g.papers == 1 %}paper{% else %}papers{% endif %})</span>{% endif %}</span></li>{% endfor %}
+  </ul>
+  <div class="network-plot">
+    <svg viewBox="0 0 {{ net.width }} {{ net.height }}" role="img" aria-labelledby="{{ kind }}-network-desc">
+      <desc id="{{ kind }}-network-desc">{% if kind == "author" %}Co-author network with {{ net.count }} co-authors in {{ net.groups.size }} groups.{% else %}Paper network with {{ net.count }} papers in {{ net.groups.size }} groups.{% endif %}</desc>
+      <g class="net-links">{% for l in net.links %}<line class="{% if l.spoke %}spoke{% endif %}" x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" stroke-width="{{ l.w }}" style="--o: {{ l.o }}" data-a="{{ l.source }}" data-b="{{ l.target }}"/>{% endfor %}</g>
+      <g class="net-nodes">{% for n in net.nodes %}{% if n.url %}<a href="{{ n.url }}" class="net-node net-{{ n.group }}" data-id="{{ n.id }}">{% else %}<g class="net-node net-{{ n.group }}{% if n.me %} net-me{% endif %}" data-id="{{ n.id }}" tabindex="0">{% endif %}
+        <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ n.r }}"/>
+        <text x="{{ n.x }}" y="{{ n.y | plus: n.r | plus: 12 }}" class="{% if n.named %}named{% endif %}">{{ n.label }}</text>
+        <title>{% if kind == "author" %}{% if n.me %}{{ n.label }}{% else %}{{ n.label }}: {{ n.papers }} {% if n.papers == 1 %}paper{% else %}papers{% endif %} with me{% endif %}{% else %}{{ n.title }} ({{ n.label }}) · {{ n.citations }} {% if n.citations == 1 %}citation{% else %}citations{% endif %}{% endif %}</title>
+      {% if n.url %}</a>{% else %}</g>{% endif %}{% endfor %}</g>
+    </svg>
+  </div>
+</figure>
+{% endif %}{% endfor %}
+{% if shown == 0 %}<p>The networks appear here once the site is built with the SciX token.</p>{% endif %}
+
+<script>
+// Hovering or focusing a circle highlights it, its links and its neighbours
+document.querySelectorAll('[data-network] svg').forEach(function (svg) {
+  var lines = svg.querySelectorAll('.net-links line');
+  function show(id) {
+    var near = {};
+    near[id] = true;
+    lines.forEach(function (l) {
+      var on = l.dataset.a === id || l.dataset.b === id;
+      l.classList.toggle('on', on);
+      if (on) { near[l.dataset.a] = true; near[l.dataset.b] = true; }
+    });
+    svg.querySelectorAll('.net-node').forEach(function (n) { n.classList.toggle('on', !!near[n.dataset.id]); });
+    svg.classList.add('focus');
+  }
+  function hide() {
+    svg.classList.remove('focus');
+    svg.querySelectorAll('.on').forEach(function (n) { n.classList.remove('on'); });
+  }
+  svg.querySelectorAll('.net-node').forEach(function (n) {
+    n.addEventListener('mouseenter', function () { show(n.dataset.id); });
+    n.addEventListener('focus', function () { show(n.dataset.id); });
+    n.addEventListener('mouseleave', hide);
+    n.addEventListener('blur', hide);
+  });
+});
+</script>
