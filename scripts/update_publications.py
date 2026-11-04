@@ -155,6 +155,7 @@ def fetch_metrics(token, bibcodes):
     histogram = metrics["histograms"]["citations"]
     citations = {key: per_year(histogram.get(name, {})) for key, name, _, _ in CITATION_TYPES}
     reads_histogram = metrics["histograms"].get("reads", {})
+    print(f"::notice::SciX reads histogram: {', '.join(f'{k} ({sum(v.values()) if isinstance(v, dict) else v})' for k, v in reads_histogram.items()) or 'none'}")
     reads = {"all": per_year(reads_histogram.get("all reads", {})),
              "refereed": per_year(reads_histogram.get("refereed reads", {}))}
     return citations, reads, metrics["indicators"]["h"]
@@ -208,7 +209,8 @@ def fetch_clean_citations(token, papers):
         kept = [c for c in citing if not shares_author(c.get("author") or [], own)]
         dropped += len(citing) - len(kept)
         years[doc["bibcode"]] = [int(c["year"]) for c in kept if str(c.get("year") or "").isdigit()]
-    print(f"h-index citations: {sum(map(len, years.values()))} kept, {dropped} self-citations left out")
+    print(f"::notice::h-index: {len(papers)} refereed papers, {sum(map(len, years.values()))} citations kept, "
+          f"{dropped} self-citations left out")
     return years
 
 
@@ -712,12 +714,12 @@ def main():
         try:
             citations, reads, h_index = fetch_metrics(token, listed)
         except Exception as err:
-            print(f"SciX metrics failed ({err}); citations, reads and h-index are left out.", file=sys.stderr)
+            print(f"::warning::SciX metrics failed ({err!r}); citations, reads and h-index are left out.")
         try:
             refereed = [d for d in docs if d.get("bibcode") in listed and group_of(d) in ("first_author", "coauthor")]
             cited_years = fetch_clean_citations(token, refereed)
         except Exception as err:
-            print(f"SciX citation lists failed ({err}); the h-index chart is left out.", file=sys.stderr)
+            print(f"::warning::SciX citation lists failed ({err!r}); the h-index chart is left out.")
         try:
             bibtex = fetch_bibtex(token, listed)
         except Exception as err:
