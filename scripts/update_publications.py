@@ -74,6 +74,10 @@ ARXIV_URL = "https://export.arxiv.org/api/query"
 CROSSREF_URL = "https://api.crossref.org/works"
 USER_AGENT = "publication-list/1.0 (+https://franstis.github.io)"
 FIELDS = "bibcode,title,author,year,pub,volume,page,doi,identifier,doctype,property,comment,abstract"
+# Each author's ORCID, in author order ("-" when none): given by the journal,
+# claimed by the author in SciX, or matched by SciX
+ORCID_FIELDS = ("orcid_pub", "orcid_user", "orcid_other")
+FIELDS += "," + ",".join(ORCID_FIELDS)
 OUT_FILE = pathlib.Path(__file__).resolve().parent.parent / "_data" / "publications.json"
 
 JOURNALS = {
@@ -183,23 +187,49 @@ def same_person(a, b):
     return fa.lower() == fb.lower()
 
 
-def shares_author(authors_a, authors_b):
-    keys_b = {}
-    for key in map(author_key, authors_b):
-        keys_b.setdefault(key[0], []).append(key)
-    return any(same_person(a, b) for a in map(author_key, authors_a) for b in keys_b.get(a[0], []))
+def people(doc):
+    """The authors of a paper as (name key, ORCID or None)."""
+    lists = [doc.get(f) or [] for f in ORCID_FIELDS]
+    out = []
+    for i, name in enumerate(doc.get("author") or []):
+        ids = [l[i].strip().upper() for l in lists if i < len(l) and re.fullmatch(r"\s*\d{4}-\d{4}-\d{4}-\d{3}[\dXx]\s*", l[i] or "")]
+        out.append((author_key(name), ids[0] if ids else None))
+    return out
+
+
+def shared_author(citing, cited):
+    """How the citing paper shares an author with the cited one: "orcid" (the
+    same ORCID), "name" (same name, and at least one of the two has no ORCID),
+    or None. Two authors with the same name but different ORCIDs are different
+    people; "clash" counts such pairs."""
+    a, b = people(citing), people(cited)
+    if {o for _, o in a if o} & {o for _, o in b if o}:
+        return "orcid", 0
+    by_surname = {}
+    for key, orcid in b:
+        by_surname.setdefault(key[0], []).append((key, orcid))
+    found, clash = None, 0
+    for key, orcid in a:
+        for other, other_orcid in by_surname.get(key[0], []):
+            if same_person(key, other):
+                if orcid and other_orcid:
+                    clash += 1
+                else:
+                    found = "name"
+    return found, clash
 
 
 def fetch_citing(token, docs, refereed_bibcodes):
     """For each paper, its citations as (year, citing paper refereed?, self-citation?).
-    A self-citation is a citing paper that shares any author with the cited one."""
-    cites, kept, dropped = {}, 0, 0
+    A self-citation is a citing paper that shares any author with the cited one:
+    the same ORCID, or the same name when one of the two has no ORCID in SciX."""
+    cites, kept, by = {}, 0, {"orcid": 0, "name": 0, "clash": 0}
     for doc in docs:
         citing, start = [], 0
         while True:
             params = urllib.parse.urlencode({
                 "q": f'citations(bibcode:"{doc["bibcode"]}")',
-                "fl": "bibcode,author,year,property", "rows": 2000, "start": start})
+                "fl": "bibcode,author,year,property," + ",".join(ORCID_FIELDS), "rows": 2000, "start": start})
             req = urllib.request.Request(f"{ADS_URL}?{params}", headers={"Authorization": f"Bearer {token}"})
             with urllib.request.urlopen(req, timeout=60) as resp:
                 body = json.load(resp)["response"]
@@ -207,16 +237,25 @@ def fetch_citing(token, docs, refereed_bibcodes):
             start += len(body["docs"])
             if not body["docs"] or start >= body["numFound"]:
                 break
-        own = doc.get("author") or []
-        rows = [(int(c["year"]), "REFEREED" in (c.get("property") or []),
-                 shares_author(c.get("author") or [], own))
-                for c in citing if str(c.get("year") or "").isdigit()]
+        rows = []
+        for c in citing:
+            if not str(c.get("year") or "").isdigit():
+                continue
+            ref = "REFEREED" in (c.get("property") or [])
+            how, clash = shared_author(c, doc)
+            rows.append((int(c["year"]), ref, how is not None))
+            if doc["bibcode"] in refereed_bibcodes and ref:
+                kept += how is None
+                by["clash"] += clash
+                if how:
+                    by[how] += 1
         cites[doc["bibcode"]] = rows
-        if doc["bibcode"] in refereed_bibcodes:
-            kept += sum(1 for _, ref, own_ in rows if ref and not own_)
-            dropped += sum(1 for _, ref, own_ in rows if ref and own_)
+    known = sum(1 for d in docs for _, o in people(d) if o)
     print(f"::notice::h-index: {len(refereed_bibcodes)} refereed papers, {kept} refereed citations kept, "
-          f"{dropped} self-citations left out; {sum(map(len, cites.values()))} citations to all {len(docs)} papers")
+          f"{by['orcid'] + by['name']} self-citations left out ({by['orcid']} by ORCID, {by['name']} by name "
+          f"where an ORCID is missing; {by['clash']} same-name authors with different ORCIDs counted as different "
+          f"people); ORCIDs known for {known} of {sum(len(d.get('author') or []) for d in docs)} author places "
+          f"on my papers; {sum(map(len, cites.values()))} citations to all {len(docs)} papers")
     return {"refereed": refereed_bibcodes, "cites": cites}
 
 

@@ -35,8 +35,12 @@ Above the list, four charts show papers per year (counted from the list),
 citations and reads per year (from the SciX metrics API, for the papers in the
 list) and the h-index at the end of each year, as two curves. The strict curve
 counts only refereed papers citing refereed papers, and leaves out
-self-citations: a citing paper that shares any author with the cited one (same
-surname and first name, or the same initial when one is abbreviated). The other
+self-citations: a citing paper that shares any author with the cited one.
+Authors are matched by ORCID (as SciX has it: given by the journal, claimed in
+SciX, or matched by SciX). Only when one of the two has no ORCID are they
+matched by name (same surname and first name, or the same initial when one is
+abbreviated); two authors with the same name but different ORCIDs count as
+different people. The build log reports how many were found each way. The other
 counts all citations to all papers. The h-index on the home page is SciX's own,
 counting all citations.
 The citations, reads and h-index charts, the h-index and the "Copy BibTeX"
