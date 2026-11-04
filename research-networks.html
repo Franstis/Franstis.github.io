@@ -4,66 +4,104 @@ title: Networks
 heading: Research
 permalink: /research/networks/
 subnav: research
-description: "Francesco Pistis's co-author network and paper network, computed by SciX from his publications."
+description: "Francesco Pistis's author network and paper network, computed by SciX from his publications."
 body_class: research
 ---
-{% assign nets = site.data.networks %}
-<p class="lead">Who I write papers with, and how my papers relate through the work they cite.
-Both networks are computed by <a href="https://scixplorer.org/search?q=orcid%3A{{ site.author.orcid }}&amp;sort=date+desc%2Cbibcode+desc">SciX</a>
-from my publication list{% if nets.updated %} (updated {{ nets.updated }}){% endif %}.</p>
+{% assign nets = site.data.networks %}{% assign scix_q = "orcid%3A" | append: site.author.orcid | append: "&amp;sort=date+desc%2Cbibcode+desc" %}
+<p class="lead">Who I write papers with, and how my papers relate through the work they cite, as
+<a href="https://scixplorer.org/search/author_network?q={{ scix_q }}">SciX</a> draws them from my
+publication list{% if nets.updated %} (updated {{ nets.updated }}){% endif %}.</p>
 
-{% assign shown = 0 %}{% assign kinds = "author,paper" | split: "," %}
-{% for kind in kinds %}{% assign net = nets[kind] %}{% if net %}{% assign shown = shown | plus: 1 %}
-<figure class="network" id="{{ kind }}-network" data-network>
-  <figcaption>
-    {% if kind == "author" %}
-    <h2>Co-author network <span class="count">{{ net.count }}</span></h2>
-    <p class="chart-note">My co-authors, in the groups SciX finds of people who often write together.
-      Bigger circles: more papers with me. Lines: papers shared between two co-authors.</p>
-    {% else %}
-    <h2>Paper network <span class="count">{{ net.count }}</span></h2>
-    <p class="chart-note">My papers, grouped by the references they share. Bigger circles: more citations.
-      Thicker lines: more references in common. Select a paper to open it on SciX.</p>
-    {% endif %}
-  </figcaption>
-  <ul class="chart-legend">
-    {% for g in net.groups %}<li><i class="key net-{{ g.key }}"></i><span>{{ g.label }}{% if kind == "paper" %} <span class="muted">({{ g.papers }} {% if g.papers == 1 %}paper{% else %}papers{% endif %})</span>{% endif %}</span></li>{% endfor %}
-  </ul>
-  <div class="network-plot">
-    <svg viewBox="0 0 {{ net.width }} {{ net.height }}" role="img" aria-labelledby="{{ kind }}-network-desc">
-      <desc id="{{ kind }}-network-desc">{% if kind == "author" %}Co-author network with {{ net.count }} co-authors in {{ net.groups.size }} groups.{% else %}Paper network with {{ net.count }} papers in {{ net.groups.size }} groups.{% endif %}</desc>
-      <g class="net-links">{% for l in net.links %}<line class="{% if l.spoke %}spoke{% endif %}" x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" stroke-width="{{ l.w }}" style="--o: {{ l.o }}" data-a="{{ l.source }}" data-b="{{ l.target }}"/>{% endfor %}</g>
-      <g class="net-nodes">{% for n in net.nodes %}{% if n.url %}<a href="{{ n.url }}" class="net-node net-{{ n.group }}" data-id="{{ n.id }}">{% else %}<g class="net-node net-{{ n.group }}{% if n.me %} net-me{% endif %}" data-id="{{ n.id }}" tabindex="0">{% endif %}
-        <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ n.r }}"/>
-        <text x="{{ n.x }}" y="{{ n.y | plus: n.r | plus: 12 }}" class="{% if n.named %}named{% endif %}">{{ n.label }}</text>
-        <title>{% if kind == "author" %}{% if n.me %}{{ n.label }}{% else %}{{ n.label }}: {{ n.papers }} {% if n.papers == 1 %}paper{% else %}papers{% endif %} with me{% endif %}{% else %}{{ n.title }} ({{ n.label }}) · {{ n.citations }} {% if n.citations == 1 %}citation{% else %}citations{% endif %}{% endif %}</title>
-      {% if n.url %}</a>{% else %}</g>{% endif %}{% endfor %}</g>
-    </svg>
+{% assign net = nets.author %}{% if net %}
+<section class="network" id="author-network" data-network>
+  <header class="network-head">
+    <h2>Author network <span class="count">{{ net.count }}</span></h2>
+    <p class="chart-note">My co-authors, in the groups SciX finds of people who often write together (inner
+      ring). Each co-author's share of the outer ring is how often they appear on my papers.
+      <a href="https://scixplorer.org/search/author_network?q={{ scix_q }}">Open on SciX</a></p>
+  </header>
+  <div class="network-body">
+    <figure class="network-plot">
+      <svg viewBox="{{ net.view }}" role="img" aria-labelledby="author-network-desc">
+        <desc id="author-network-desc">Sunburst of {{ net.count }} co-authors in {{ net.groups.size }} groups around {{ net.me }}.</desc>
+        <g class="ring">{% for g in net.groups %}<path class="net-group net-{{ g.key }}" d="{{ g.path }}"><title>Group {{ g.key }}: {{ g.label }} · {{ g.count }} co-authors</title></path>{% endfor %}</g>
+        <g class="ring">{% for a in net.authors %}<path class="net-item net-{{ a.group }}" d="{{ a.path }}" data-id="{{ a.id }}" tabindex="0"><title>{{ a.name }}: {{ a.papers }} {% if a.papers == 1 %}paper{% else %}papers{% endif %} with me{% if a.citations %} · {{ a.citations }} citations{% endif %}</title></path>{% endfor %}</g>
+        <g class="net-labels" aria-hidden="true">{% for a in net.authors %}<text x="{{ a.label.x }}" y="{{ a.label.y }}" transform="rotate({{ a.label.rotate }} {{ a.label.x }} {{ a.label.y }})" text-anchor="{{ a.label.anchor }}" style="font-size: {{ a.label.size }}px" data-id="{{ a.id }}">{{ a.name }}</text>{% endfor %}</g>
+        <circle class="net-centre" cx="{{ net.centre }}" cy="{{ net.centre }}" r="{{ net.hole }}"/>
+        <g class="net-links">{% for l in net.links %}<path d="{{ l.path }}" stroke-width="{{ l.w }}" data-a="{{ l.a }}" data-b="{{ l.b }}"/>{% endfor %}</g>
+        <text class="net-me" x="{{ net.centre }}" y="{{ net.centre }}" text-anchor="middle" dominant-baseline="central">{{ net.me }}</text>
+      </svg>
+      <figcaption>
+        <label class="switch"><input type="checkbox" data-links> Show links between co-authors</label>
+      </figcaption>
+    </figure>
+    <div class="network-side">
+      {% if net.activity %}{% include chart.html chart=net.activity %}{% endif %}
+      <details class="network-detail">
+        <summary class="button-small"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Co-authors in each group</summary>
+        {% for g in net.groups %}<h3><i class="key net-{{ g.key }}"></i>Group {{ g.key }} <span class="muted">{{ g.count }} co-authors · {{ g.papers }} papers</span></h3>
+        <p>{% for m in g.members %}{{ m.name }} <span class="muted">({{ m.papers }})</span>{% unless forloop.last %} · {% endunless %}{% endfor %}</p>{% endfor %}
+      </details>
+    </div>
   </div>
-</figure>
-{% endif %}{% endfor %}
-{% if shown == 0 %}<p>The networks appear here once the site is built with the SciX token.</p>{% endif %}
+</section>
+{% endif %}
+
+{% assign net = nets.paper %}{% if net %}
+<section class="network" id="paper-network" data-network>
+  <header class="network-head">
+    <h2>Paper network <span class="count">{{ net.count }}</span></h2>
+    <p class="chart-note">My papers, in groups that cite the same references, labelled with the words SciX
+      finds most typical of each group. Each group's share of the ring is its number of papers; the band
+      joins groups that share references.
+      <a href="https://scixplorer.org/search/paper_network?q={{ scix_q }}">Open on SciX</a></p>
+  </header>
+  <div class="network-body">
+    <figure class="network-plot">
+      <svg viewBox="{{ net.view }}" role="img" aria-labelledby="paper-network-desc">
+        <desc id="paper-network-desc">Ring of {{ net.groups.size }} groups of papers, {{ net.count }} papers in all.</desc>
+        <g class="net-bands">{% for b in net.bands %}<path d="{{ b.path }}" stroke-width="{{ b.w }}"><title>Groups {{ b.a }} and {{ b.b }}: {{ b.weight }} shared references</title></path>{% endfor %}</g>
+        <g class="ring">{% for g in net.groups %}<path class="net-item net-{{ g.key }}" d="{{ g.path }}" tabindex="0"><title>Group {{ g.key }}: {{ g.papers }} {% if g.papers == 1 %}paper{% else %}papers{% endif %}{% if g.citations %} · {{ g.citations }} citations{% endif %}{% if g.reads %} · {{ g.reads }} reads{% endif %}</title></path>{% endfor %}</g>
+        <g class="net-words" aria-hidden="true">{% for g in net.groups %}<text x="{{ g.text.x }}" y="{{ g.text.y }}" text-anchor="{{ g.text.anchor }}">{% for w in g.words %}<tspan x="{{ g.text.x }}"{% unless forloop.first %} dy="15"{% endunless %}>{{ w }}</tspan>{% endfor %}</text>{% endfor %}</g>
+      </svg>
+    </figure>
+    <div class="network-side">
+      {% if net.activity %}{% include chart.html chart=net.activity %}{% endif %}
+      <details class="network-detail">
+        <summary class="button-small"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Papers in each group</summary>
+        {% for g in net.groups %}<h3><i class="key net-{{ g.key }}"></i>Group {{ g.key }} <span class="muted">{{ g.label }}</span></h3>
+        <ol>{% for p in g.list %}<li><a href="{{ p.url }}">{{ p.title }}</a> <span class="muted">{{ p.author }} ({{ p.year }}) · {{ p.citations }} {% if p.citations == 1 %}citation{% else %}citations{% endif %}</span></li>{% endfor %}</ol>{% endfor %}
+      </details>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% unless nets.author or nets.paper %}<p>The networks appear here once the site is built with the SciX token.</p>{% endunless %}
 
 <script>
-// Hovering or focusing a circle highlights it, its links and its neighbours
-document.querySelectorAll('[data-network] svg').forEach(function (svg) {
-  var lines = svg.querySelectorAll('.net-links line');
+// "Show links" draws SciX's links between co-authors; pointing at a co-author
+// then highlights theirs
+document.querySelectorAll('[data-network]').forEach(function (box) {
+  var svg = box.querySelector('svg');
+  var toggle = box.querySelector('[data-links]');
+  if (toggle) toggle.addEventListener('change', function () { svg.classList.toggle('show-links', toggle.checked); });
+  var links = svg.querySelectorAll('.net-links path');
   function show(id) {
     var near = {};
     near[id] = true;
-    lines.forEach(function (l) {
+    links.forEach(function (l) {
       var on = l.dataset.a === id || l.dataset.b === id;
       l.classList.toggle('on', on);
       if (on) { near[l.dataset.a] = true; near[l.dataset.b] = true; }
     });
-    svg.querySelectorAll('.net-node').forEach(function (n) { n.classList.toggle('on', !!near[n.dataset.id]); });
+    svg.querySelectorAll('[data-id]').forEach(function (n) { n.classList.toggle('on', !!near[n.dataset.id]); });
     svg.classList.add('focus');
   }
   function hide() {
     svg.classList.remove('focus');
     svg.querySelectorAll('.on').forEach(function (n) { n.classList.remove('on'); });
   }
-  svg.querySelectorAll('.net-node').forEach(function (n) {
+  svg.querySelectorAll('.net-item[data-id]').forEach(function (n) {
     n.addEventListener('mouseenter', function () { show(n.dataset.id); });
     n.addEventListener('focus', function () { show(n.dataset.id); });
     n.addEventListener('mouseleave', hide);

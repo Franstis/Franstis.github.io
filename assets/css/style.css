@@ -617,17 +617,22 @@ li { margin: 0.35em 0; }
 .chart.reveal .seg { transform: scaleY(0); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i) * 70ms + 150ms); }
 .chart.reveal.in .seg { transform: none; }
 
-/* Co-author and paper networks (Research → Networks) --------------------- */
+/* Author and paper networks (Research → Networks), drawn as SciX draws them */
 .network {
-  margin: 24px 0 32px; padding: 18px 18px 12px;
+  margin: 24px 0 32px; padding: 18px 18px 16px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
 }
-.network figcaption h2 { margin: 0 0 4px; }
-.network figcaption .chart-note { margin: 0; max-width: 62ch; }
-.network .chart-legend { margin: 12px 0 0; }
-.network .chart-legend .muted { color: var(--muted); }
-.network-plot { margin-top: 8px; }
+.network-head h2 { margin: 0 0 4px; }
+.network-head .chart-note { margin: 0; max-width: 70ch; }
+.network-body { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
+.network-plot { margin: 0 auto; width: 100%; max-width: 560px; }
 .network-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.network-plot figcaption { margin-top: 6px; text-align: center; font-size: 0.85rem; color: var(--muted); }
+.switch { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.switch input { accent-color: var(--accent); }
+.network-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+/* The group activity chart sits inside the network card */
+.network-side .chart { padding: 0; border: 0; background: none; }
 .net-1 { --net: var(--series-1); }
 .net-2 { --net: var(--series-2); }
 .net-3 { --net: var(--series-3); }
@@ -635,33 +640,41 @@ li { margin: 0.35em 0; }
 .net-5 { --net: var(--accent-2); }
 .net-6 { --net: var(--muted); }
 .key.net-1, .key.net-2, .key.net-3, .key.net-4, .key.net-5, .key.net-6 { background: var(--net); }
-.net-links line { stroke: var(--muted); stroke-opacity: var(--o, 0.35); stroke-linecap: round; transition: stroke-opacity 0.15s; }
-.net-links line.spoke { stroke-opacity: 0.12; stroke-dasharray: 2 4; }
-.net-node { cursor: default; outline: none; }
-a.net-node { cursor: pointer; }
-.net-node circle {
-  fill: var(--net, var(--text)); stroke: var(--surface); stroke-width: 2;
-  transition: opacity 0.15s, stroke 0.15s;
-}
-.net-me circle { fill: var(--text); }
-.net-node text {
-  font-size: 11px; fill: var(--text); text-anchor: middle; pointer-events: none;
-  paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round;
-  opacity: 0; transition: opacity 0.15s;
-}
-.net-node text.named, .net-me text { opacity: 1; }
-.net-me text { font-weight: 600; }
-.net-node:hover circle, .net-node:focus-visible circle { stroke: var(--text); }
-/* While a circle is highlighted, the rest fades */
-svg.focus .net-node:not(.on) circle { opacity: 0.2; }
-svg.focus .net-node:not(.on) text { opacity: 0; }
-svg.focus .net-node.on text { opacity: 1; }
-svg.focus .net-links line { stroke-opacity: 0.06; }
-svg.focus .net-links line.on { stroke-opacity: 0.8; stroke: var(--text); }
-@media (max-width: 560px) {
-  .network { padding: 14px 12px 8px; }
-  .net-node text { font-size: 15px; }
-}
+.key-net-1 { background: var(--series-1); } .key-net-2 { background: var(--series-2); }
+.key-net-3 { background: var(--series-3); } .key-net-4 { background: var(--series-4); }
+.key-net-5 { background: var(--accent-2); } .key-net-6 { background: var(--muted); }
+.dot-net-1 { background: var(--series-1); }
+.dot-net-2 { background: var(--series-2); }
+.dot-net-3 { background: var(--series-3); }
+.dot-net-4 { background: var(--series-4); }
+.dot-net-5 { background: var(--accent-2); }
+.dot-net-6 { background: var(--muted); }
+.line-net-1 { stroke: var(--series-1); } .line-net-2 { stroke: var(--series-2); } .line-net-3 { stroke: var(--series-3); }
+.line-net-4 { stroke: var(--series-4); } .line-net-5 { stroke: var(--accent-2); } .line-net-6 { stroke: var(--muted); }
+.net-group, .net-item { fill: var(--net); stroke: var(--surface); stroke-width: 1; transition: opacity 0.15s; }
+.net-item { fill-opacity: 0.72; outline: none; }
+.net-item:hover, .net-item:focus-visible { fill-opacity: 1; }
+.net-centre { fill: var(--surface); }
+.net-me { font-size: 15px; fill: var(--text); transition: opacity 0.15s; }
+svg.show-links .net-me { opacity: 0.35; }
+.net-labels text { fill: var(--text); dominant-baseline: central; transition: opacity 0.15s; }
+.net-words text { font-size: 12.5px; fill: var(--text); }
+.net-bands path { fill: none; stroke: var(--muted); stroke-opacity: 0.35; stroke-linecap: butt; }
+/* Links between co-authors: hidden until "Show links" is ticked */
+.net-links path { fill: none; stroke: var(--text); stroke-opacity: 0.45; display: none; }
+svg.show-links .net-links path { display: inline; }
+svg.show-links .net-group, svg.show-links .net-item { opacity: 0.45; }
+/* Pointing at a co-author with links shown: theirs stand out */
+svg.show-links.focus .net-links path { stroke-opacity: 0.08; }
+svg.show-links.focus .net-links path.on { stroke-opacity: 0.9; }
+svg.focus .net-item.on { opacity: 1; fill-opacity: 0.9; }
+svg.show-links.focus .net-labels text:not(.on) { opacity: 0.35; }
+.network-detail summary { width: fit-content; }
+.network-detail h3 { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; font-size: 0.95rem; }
+.network-detail h3 .muted, .network-detail .muted { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+.network-detail p, .network-detail ol { margin: 0; font-size: 0.9rem; }
+.network-detail ol { padding-left: 1.2em; }
+.network-detail li { margin: 4px 0; }
 
 /* Search and filters (Publications, Talks) ------------------------------- */
 .filter-bar {

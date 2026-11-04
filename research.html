@@ -21,26 +21,7 @@ body_class: research
 {% assign charts = pubs.charts %}{% if charts %}
 <div class="charts">
   {% for chart in charts %}
-  <figure class="chart" id="chart-{{ chart.id }}">
-    <figcaption>
-      <span class="chart-title">{{ chart.title }}</span>
-      <span class="chart-note">{{ chart.note }}</span>
-    </figcaption>
-    {% if chart.detail %}<p class="chart-note">{{ chart.detail }}</p>{% endif %}{% if chart.types.size > 1 %}<ul class="chart-legend" aria-hidden="true">
-      {% for t in chart.types %}<li><i class="key key-{{ t.key }}"></i>{{ t.label }}</li>{% endfor %}
-    </ul>{% elsif chart.types.size == 1 and chart.detail == nil %}<p class="chart-note">All {{ chart.types[0].label | downcase }}</p>{% endif %}
-    <div class="chart-plot">
-      <div class="chart-grid" aria-hidden="true">{% for t in chart.ticks %}<span style="bottom: {{ t.pct }}%" data-v="{{ t.value }}"></span>{% endfor %}</div>
-      {% if chart.kind == "line" %}<svg class="chart-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{% for l in chart.lines %}<polyline class="line-{{ l.key }}" points="{{ l.points }}" vector-effect="non-scaling-stroke"/>{% endfor %}</svg>{% endif %}
-      <ol class="chart-bars{% if chart.kind == "line" %} chart-points{% endif %}">
-        {% for y in chart.years %}<li class="chart-col" tabindex="0" style="--h: {{ y.bar_pct }}%; --i: {{ forloop.index0 }}">
-          {% if chart.kind == "line" %}{% for seg in y.segments %}<span class="dot dot-{{ seg.key }}" style="bottom: {{ seg.pct }}%"></span>{% endfor %}{% else %}<span class="chart-bar">{% for seg in y.segments %}<span class="seg seg-{{ seg.key }}" style="height: {{ seg.pct }}%"></span>{% endfor %}</span>{% endif %}
-          <span class="chart-year" aria-hidden="true">{% if y.label %}{{ y.year }}{% endif %}</span>
-          {% if chart.kind == "line" %}<span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}: {{ chart.prefix }}</strong>{% for seg in y.segments %}<span>{{ seg.count }} {{ seg.short }}</span>{% endfor %}</span>{% else %}<span class="chart-tip"><strong>{{ y.year }}{% if y.partial %} so far{% endif %}: {% if chart.prefix %}{{ chart.prefix }} {{ y.count }}{% else %}{{ y.count }} {% if y.count == 1 %}{{ chart.unit.one }}{% else %}{{ chart.unit.many }}{% endif %}{% endif %}</strong>{% if chart.types.size > 1 %}{% for seg in y.segments reversed %}<span>{{ seg.count }} {{ seg.short }}</span>{% endfor %}{% endif %}</span>{% endif %}
-        </li>{% endfor %}
-      </ol>
-    </div>
-  </figure>
+  {% include chart.html chart=chart %}
   {% endfor %}
 </div>
 {% endif %}

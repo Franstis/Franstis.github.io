@@ -42,10 +42,15 @@ counting all citations.
 The citations, reads and h-index charts, the h-index and the "Copy BibTeX"
 buttons only appear when the list comes from SciX.
 
-The Networks tab (`research-networks.html`) shows SciX's co-author network and
-paper network for the same papers. The build saves SciX's replies in
-`assets/data/scix-*-network.json`, and `scripts/networks.py` lays them out into
-`_data/networks.json` (run it alone to redo the layout from the saved replies).
+The Networks tab (`research-networks.html`) shows SciX's author network and
+paper network for the same papers, drawn as SciX draws them: the author network
+as a ring of co-author groups around you (tick "Show links" for the links
+between co-authors), the paper network as a ring of groups of papers that cite
+the same references. Each has SciX's "group activity over time" chart and the
+list of each group. The build saves SciX's replies in
+`assets/data/scix-*-network.json`, and `scripts/networks.py` turns them into
+`_data/networks.json` (run it alone to redo it from the saved replies). The
+charts on both tabs share `_includes/chart.html`.
 
 ## CV and talks (from Overleaf)
 
