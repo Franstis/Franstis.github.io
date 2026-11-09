@@ -1,6 +1,8 @@
 # Checks every link on the live site once a week (and on demand from the
 # Actions tab). If any is broken the run fails, GitHub emails you, and the
 # run's summary page lists each broken link and the page it is on.
+# A site that does not answer at all (down, or too slow) is not a broken link:
+# it shows as a warning on the run, which still passes.
 name: Check links
 
 on:
@@ -35,11 +37,20 @@ jobs:
           args: >-
             --no-progress
             --max-retries 3 --retry-wait-time 10 --timeout 45
+            --accept-timeouts
             --accept '200..=299,403,429'
             --exclude 'scholar\.google\.com'
             --exclude 'scopus\.com'
             --user-agent 'Mozilla/5.0 (link check for franstis.github.io)'
             ${{ steps.pages.outputs.list }}
           format: markdown
+          output: lychee/out.md
           jobSummary: true
           fail: true
+
+      - name: Warn about sites that did not answer
+        if: always()
+        run: |
+          grep -h 'TIMEOUT' lychee/out.md 2>/dev/null | grep -o 'https\?://[^>]*' | sort -u | while read -r url; do
+            echo "::warning title=Link did not answer::$url (the site may be down; the link is checked again next week)"
+          done

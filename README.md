@@ -91,7 +91,8 @@ compiles the PDF behind the "Download the full CV" button.
 (and from the Actions tab: **Check links → Run workflow**). When a link is
 broken the run fails, GitHub emails you, and the run's page lists each broken
 link with the page it is on. Google Scholar and Scopus are skipped, since they
-refuse automated checks.
+refuse automated checks. A site that does not answer at all (down, or too slow)
+does not fail the run: it is listed as a warning on the run's page instead.
 
 ## Search engines and sharing
 
