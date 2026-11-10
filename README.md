@@ -109,6 +109,9 @@ does not fail the run: it is listed as a warning on the run's page instead.
 - `404.html` is the page shown for addresses that do not exist.
 
 - The query, papers to leave out and other settings are at the top of the script.
+- When SciX lists a paper twice (the journal article and its arXiv preprint as
+  separate records), the site shows it once, as the journal article with its
+  arXiv link; citations and reads to both records still count.
 - SciX finds papers by ORCID only once they are claimed in SciX
   (scixplorer.org → ORCID).
 - `_data/publications.json` in the repository holds a list taken from the CV. It

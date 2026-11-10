@@ -225,18 +225,23 @@ def fetch_citing(token, docs, refereed_bibcodes):
     the same ORCID, or the same name when one of the two has no ORCID in SciX."""
     cites, kept, by = {}, 0, {"orcid": 0, "name": 0, "clash": 0}
     for doc in docs:
-        citing, start = [], 0
-        while True:
-            params = urllib.parse.urlencode({
-                "q": f'citations(bibcode:"{doc["bibcode"]}")',
-                "fl": "bibcode,author,year,property," + ",".join(ORCID_FIELDS), "rows": 2000, "start": start})
-            req = urllib.request.Request(f"{ADS_URL}?{params}", headers={"Authorization": f"Bearer {token}"})
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                body = json.load(resp)["response"]
-            citing += body["docs"]
-            start += len(body["docs"])
-            if not body["docs"] or start >= body["numFound"]:
-                break
+        # A paper SciX lists twice (journal and arXiv records): a citing paper counts once
+        citing = {}
+        for bibcode in [doc["bibcode"]] + doc.get("also", []):
+            start = 0
+            while True:
+                params = urllib.parse.urlencode({
+                    "q": f'citations(bibcode:"{bibcode}")',
+                    "fl": "bibcode,author,year,property," + ",".join(ORCID_FIELDS), "rows": 2000, "start": start})
+                req = urllib.request.Request(f"{ADS_URL}?{params}", headers={"Authorization": f"Bearer {token}"})
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    body = json.load(resp)["response"]
+                for c in body["docs"]:
+                    citing.setdefault(c.get("bibcode"), c)
+                start += len(body["docs"])
+                if not body["docs"] or start >= body["numFound"]:
+                    break
+        citing = list(citing.values())
         rows = []
         for c in citing:
             if not str(c.get("year") or "").isdigit():
@@ -388,15 +393,31 @@ def title_key(doc):
 
 
 def drop_duplicates(docs):
-    """Leave out preprints SciX still lists next to their journal version."""
-    published = {title_key(d) for d in docs if group_of(d) in ("first_author", "coauthor")}
-    kept = []
+    """List each paper once. SciX sometimes keeps the arXiv preprint as a record
+    of its own next to the journal article; the two are merged into the journal
+    record (the one SciX has as refereed, not an arXiv bibcode), which takes the
+    preprint's arXiv id. The preprint's bibcode is kept in "also", so its
+    citations and reads still count."""
+    def rank(d):
+        refereed = group_of(d) in ("first_author", "coauthor")
+        sciX_journal = refereed and "arXiv" not in (d.get("bibcode") or "") and "REFEREED" in (d.get("property") or [])
+        return (not sciX_journal, not refereed)
+    by_title = {}
     for doc in docs:
-        if group_of(doc) == "preprints" and title_key(doc) in published:
-            print(f"Leaving out {doc.get('bibcode')}: the journal version is listed")
+        if group_of(doc) in ("first_author", "coauthor", "preprints") and title_key(doc):
+            by_title.setdefault(title_key(doc), []).append(doc)
+    dropped = set()
+    for versions in by_title.values():
+        if len(versions) < 2 or not any(group_of(d) in ("first_author", "coauthor") for d in versions):
             continue
-        kept.append(doc)
-    return kept
+        keep, *others = sorted(versions, key=rank)
+        for other in others:
+            print(f"Merging {other.get('bibcode')} into {keep.get('bibcode')}: the same paper")
+            keep.setdefault("also", []).append(other["bibcode"])
+            known = set(keep.get("identifier") or [])
+            keep["identifier"] = (keep.get("identifier") or []) + [i for i in other.get("identifier") or [] if i not in known]
+            dropped.add(id(other))
+    return [d for d in docs if id(d) not in dropped]
 
 
 def clean_text(raw):
@@ -805,6 +826,9 @@ def main():
             return 0
         docs = fetch_ads(token)
 
+    # Before update_preprints, so a preprint whose journal record SciX already has
+    # is merged into it instead of being looked up on Crossref
+    docs = drop_duplicates(docs)
     update_preprints(docs)
     docs = drop_duplicates(docs)
     citations = h_index = bibtex = reads = cited_years = None
@@ -812,7 +836,9 @@ def main():
         listed = [d["bibcode"] for d in docs if d.get("bibcode") and group_of(d)
                   and d["bibcode"] not in EXCLUDE_BIBCODES]
         try:
-            citations, reads, h_index = fetch_metrics(token, listed)
+            # With the second records of papers SciX lists twice, as SciX counts them
+            citations, reads, h_index = fetch_metrics(token, listed + [b for d in docs if d.get("bibcode") in listed
+                                                                        for b in d.get("also", [])])
         except Exception as err:
             print(f"::warning::SciX metrics failed ({err!r}); citations, reads and h-index are left out.")
         try:
