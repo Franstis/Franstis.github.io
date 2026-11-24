@@ -421,7 +421,9 @@ def drop_duplicates(docs):
 
 
 def clean_text(raw):
-    text = re.sub(r"<[^>]+>", "", raw)
+    # SciX sends HTML: tags go, and entities (&lt; ...) become characters so
+    # they are escaped once, not twice
+    text = html.unescape(re.sub(r"<[^>]+>", "", raw))
     for cmd in sorted(LATEX, key=len, reverse=True):
         text = re.sub(re.escape(cmd) + r"(?![A-Za-z])", LATEX[cmd], text)
     text = re.sub(r"[${}]", "", text)
@@ -436,7 +438,8 @@ def clean_abstract(raw):
     """Abstract as safe HTML: LaTeX turned into characters, ^ and _ into <sup>/<sub>."""
     text = re.sub(r"(?i)<sub>(.*?)</sub>", r"_{\1}", raw)
     text = re.sub(r"(?i)<sup>(.*?)</sup>", r"^{\1}", text)
-    text = re.sub(r"<[^>]+>", "", text)
+    text = html.unescape(re.sub(r"<[^>]+>", "", text))
+    text = text.replace("<=", "≤").replace(">=", "≥")
     # Formatting commands go, their content stays (\text{O}, \mathrm{A}, \tiny ...)
     text = re.sub(r"\\(?:text|textrm|textit|textbf|texttt|textup|mathrm|mathit|mathbf|mbox|emph|rm|it|bf|sc|tiny|small|left|right)(?![A-Za-z])\s*", "", text)
     while re.search(r"\{\s*\{([^{}]*)\}\s*\}|\{\}", text):
